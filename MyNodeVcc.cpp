@@ -3,18 +3,27 @@
 #include <Arduino.h>
 #include <readvcc.h>
 
-MyNodeTime last(MyNodeNow());
-long vcc = 0;
+MyNodeTime _last(MyNodeNow());
+
+long _vcc = 0;
+
+// calibration defaults to exact 1.1v (1125300 = 1.1*1023*1000)
+long _calibration = 1125300L;
+
+void MyNodeVccCalibration( long calibration )
+{
+	_calibration = calibration;
+}
 
 long MyNodeVcc( MyNodeTime maxage )
 {
 	MyNodeTime now = MyNodeNow();
 
-	if( ! vcc || now - last > maxage ){
-		vcc = readVcc( MYNODE_VCC_CALIBRATION );
-		last = now;
+	if( ! _vcc || now - _last > maxage ){
+		_vcc = readVcc( _calibration );
+		_last = now;
 	}
 
-	return vcc;
+	return _vcc;
 }
 
