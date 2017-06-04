@@ -2,8 +2,10 @@
 
 MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible, uint8_t ir )
 {
-	uint8_t childv[] = { lux, visible, ir };
-	MyNodeItem( 3, childv );
+	MyNodeItem( 3 );
+	this->setChildId( 0, lux );
+	this->setChildId( 1, visible );
+	this->setChildId( 2, ir );
 };
 
 mysensor_sensor MyNodeItemTSL2591::getChildSensor(uint8_t child)
@@ -42,7 +44,7 @@ bool MyNodeItemTSL2591::sendAll(void)
 	uint16_t visible = full - ir;
 	uint32_t lux = _sensor.calculateLux( full, ir );
 
-#if DEBUG
+#if MYNODE_DEBUG
 	Serial.print(F(" lum: ")); Serial.println( lum );
 	Serial.print(F(" ir: ")); Serial.println( ir );
 	Serial.print(F(" full: ")); Serial.println( full );
