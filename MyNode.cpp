@@ -6,9 +6,8 @@
  * MyNode
  */
 
-MyNode::MyNode( unsigned long sleep, uint8_t itemc, uint8_t childc )
+MyNode::MyNode( uint8_t itemc, uint8_t childc )
 {
-	_sleep = sleep;
 
 	_itemn = 0;
 	_itemc = itemc;
@@ -71,6 +70,7 @@ bool MyNode::registerItem( MyNodeItem *item )
 		_childv[id] = _itemn;
 	}
 
+	++_itemn;
 	return true;
 }
 
@@ -81,8 +81,6 @@ void MyNode::before()
 	Serial.print(_itemc);
 	Serial.print(F(" itemn="));
 	Serial.print(_itemn);
-	Serial.print(F(" sleep="));
-	Serial.print(_sleep);
 	Serial.print(F(" childc="));
 	Serial.println(_childc);
 #endif
@@ -149,18 +147,46 @@ void MyNode::setup()
 void MyNode::loop()
 {
 #if MYNODE_DEBUG
-	Serial.print(F("MN loop milis: ")); Serial.println( millis());
+	Serial.print(F("MN loop time: ")); Serial.println( MyNodeNow());
 #endif
 
-	// TODO: only run itmem.loop() when it's really due
-	for( uint8_t i = 0; i < _itemn; ++i ){
-		if( ! _itemv[i] )
-			continue;
+	MyNodeTime next_sleep = MYNODE_TIME_NONE;
 
-		_itemv[i]->loop();
+	for( uint8_t i = 0; i < _itemn; ++i ){
+		MyNodeTime next = _itemv[i]->getNextTime();
+#if MYNODE_DEBUG
+		Serial.print(F("MN loop item i="));
+		Serial.print(i);
+		Serial.print(F(" next="));
+		Serial.println(next);
+#endif
+		if( next <= MyNodeNow() ){
+			_itemv[i]->runAction();
+
+			next = _itemv[i]->getNextTime();
+#if MYNODE_DEBUG
+			Serial.print(F("MN loop item i="));
+			Serial.print(i);
+			Serial.print(F(" ran, next="));
+			Serial.println(next);
+#endif
+		}
+
+		if( next <= next_sleep )
+			next_sleep = next;
 	}
 
-	sleep( _sleep ); // TODO: check result
+	MyNodeTime now = MyNodeNow();
+	if( next_sleep <= now )
+		return;
+
+	MyNodeTime duration = next_sleep - now;
+#if MYNODE_DEBUG
+	Serial.print(F("MN loop sleep="));
+	Serial.println(duration);
+#endif
+	sleep( duration ); // TODO: check result, allow interrupts
+	MyNodeDelta( duration );
 }
 
 void MyNode::receive(const MyMessage & msg)

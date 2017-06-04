@@ -11,8 +11,7 @@
 // for derived classes
 class MyNode {
 public:
-	MyNode( unsigned long sleep = 30000, uint8_t itemc = 3,
-		uint8_t childc = 5 );
+	MyNode( uint8_t itemc = 3, uint8_t childc = 5 );
 	virtual ~MyNode();
 	bool registerItem( MyNodeItem *item );
 
@@ -34,8 +33,6 @@ protected:
 	MyNodeItem *getItemChild( uint8_t child );
 
 private:
-	unsigned long _sleep;
-
 	uint8_t _itemc;		// item count
 	uint8_t _itemn;		// next item index
 	MyNodeItem **_itemv;	// item array

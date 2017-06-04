@@ -1,11 +1,13 @@
 #include "MyNodeItemTSL2591.h"
 
-MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible, uint8_t ir )
+MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
+		uint8_t ir, MyNodeTime sleep  ) :
+	MyNodeItem( 3 )
 {
-	MyNodeItem( 3 );
-	this->setChildId( 0, lux );
-	this->setChildId( 1, visible );
-	this->setChildId( 2, ir );
+	_sleep = sleep;
+	setChildId( 0, lux );
+	setChildId( 1, visible );
+	setChildId( 2, ir );
 };
 
 mysensor_sensor MyNodeItemTSL2591::getChildSensor(uint8_t child)
@@ -24,42 +26,42 @@ bool MyNodeItemTSL2591::before(void)
 	_sensor.setTiming(TSL2591_INTEGRATIONTIME_200MS);
 };
 
-bool MyNodeItemTSL2591::loop(void)
-{
-	return sendAll();
-};
-
-bool MyNodeItemTSL2591::sendAll(void)
+bool MyNodeItemTSL2591::actionPollRun(void)
 {
 	bool result = true;
 
-	uint32_t lum = _sensor.getFullLuminosity();
-	if( lum == UINT32_MAX ){
-		Serial.println(F("TSL2591 FAILED to get lum"));
+#if MYNODE_DEBUG
+	Serial.println(F("MyNodeItemTSL2591::sendAll"));
+#endif
+
+	uint32_t raw = _sensor.getFullLuminosity();
+	if( raw == UINT32_MAX ){
+		Serial.println(F("TSL2591 FAILED to get raw data"));
 		return false;
 	}
 
-	uint16_t ir = lum >> 16;
-	uint16_t full = lum & 0xFFFF;
+	uint16_t full = raw & 0xFFFF;
+	uint16_t ir = raw >> 16;
 	uint16_t visible = full - ir;
 	uint32_t lux = _sensor.calculateLux( full, ir );
 
 #if MYNODE_DEBUG
-	Serial.print(F(" lum: ")); Serial.println( lum );
-	Serial.print(F(" ir: ")); Serial.println( ir );
+	Serial.print(F(" raw: ")); Serial.println( raw );
 	Serial.print(F(" full: ")); Serial.println( full );
+	Serial.print(F(" ir: ")); Serial.println( ir );
 	Serial.print(F(" visible: ")); Serial.println( visible );
 	Serial.print(F(" lux: ")); Serial.println( lux );
 #endif
 
-	result &= send(_msg_set(2).set(ir));
-	result &= send(_msg_set(2).set(visible));
 	if( lux >= TSL2591_LUX_CLIPPED ){
 		Serial.println(F(" FAILED to get lux"));
 		lux=TSL2591_LUX_CLIPPED; // maxes out at 88 kLux
 	}
 	result &= send(_msg_set(0).set(lux));
+	result &= send(_msg_set(1).set(visible));
+	result &= send(_msg_set(2).set(ir));
 
+	_nextTime = MyNodeNow() + _sleep;
 	return result;
 }
 

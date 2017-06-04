@@ -2,6 +2,18 @@
 
 static MyMessage _msgTmp;
 
+MyNodeTime _delta = 0;
+
+void MyNodeDelta( MyNodeTime delta )
+{
+	_delta += delta;
+}
+
+MyNodeTime MyNodeNow( void )
+{
+	return _delta + millis();
+}
+
 /************************************************************
  * MyNodeItem
  */
@@ -10,6 +22,9 @@ MyNodeItem::MyNodeItem( uint8_t childc )
 {
 	_childc = childc;
 	_childv = new uint8_t[childc](MYNODE_CHILD_NONE);
+
+	_nextTime = 0;
+	_nextAction = MYNODE_ACTION_INIT;
 }
 
 MyNodeItem::~MyNodeItem()
@@ -103,14 +118,65 @@ bool MyNodeItem::presentation( void )
 	return result;
 }
 
-bool MyNodeItem::loop( void )
+MyNodeAction MyNodeItem::getNextAction( void )
+{
+	return _nextAction;
+}
+
+MyNodeTime MyNodeItem::getNextTime( void )
+{
+	return _nextTime;
+}
+
+bool MyNodeItem::runAction( void )
+{
+	switch( _nextAction ){
+	case MYNODE_ACTION_POLLRUN:
+		_nextTime = 0;
+		_nextAction = MYNODE_ACTION_POLLPREPARE;
+		return actionPollRun();
+		;;
+
+	case MYNODE_ACTION_POLLPREPARE:
+		_nextTime = 0;
+		_nextAction = MYNODE_ACTION_POLLRUN;
+		return actionPollPrepare();
+		;;
+
+	case MYNODE_ACTION_INIT:
+		_nextTime = 0;
+		_nextAction = MYNODE_ACTION_POLLPREPARE;
+		return actionInit();
+		;;
+
+	}
+
+	Serial.println(F("MNI runAction: unknown action"));
+	_nextTime = MYNODE_TIME_NONE;
+	return false;
+}
+
+bool MyNodeItem::actionInit( void )
 {
 #if MYNODE_DEBUG
-	Serial.println(F("MNI loop"));
+	Serial.println(F("MNI actionInit"));
 #endif
 }
 
+bool MyNodeItem::actionPollPrepare( void )
+{
+#if MYNODE_DEBUG
+	Serial.println(F("MNI actionPollPrepare"));
+#endif
+}
 
+bool MyNodeItem::actionPollRun( void )
+{
+#if MYNODE_DEBUG
+	Serial.println(F("MNI actionPollRun"));
+#endif
+	_nextTime = MyNodeNow() + 30000;
+}
 
 MyMessage& MyNodeItem::_msg_set( const uint8_t child,
 		const uint8_t destination,
