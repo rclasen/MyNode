@@ -40,6 +40,7 @@ public:
 	uint8_t getChildMax( void );
 
 	virtual mysensor_sensor getChildSensor(uint8_t child);
+	virtual mysensor_data getChildType(uint8_t child);
 
 	// dispatched by MyNode:
 	virtual bool before(void);
@@ -47,7 +48,7 @@ public:
 
 	MyNodeAction getNextAction( void );
 	MyNodeTime getNextTime( void );
-	bool runAction( void );
+	virtual bool runAction( void );
 
 	virtual bool actionInit(void);
 	virtual bool actionPollPrepare(void);

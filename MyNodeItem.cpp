@@ -71,6 +71,13 @@ mysensor_sensor MyNodeItem::getChildSensor(uint8_t child)
 	return S_CUSTOM;
 }
 
+mysensor_data MyNodeItem::getChildType(uint8_t child)
+{
+	(void)child;
+
+	return V_CUSTOM;
+}
+
 uint8_t MyNodeItem::getChildMax( void )
 {
 	uint8_t max = 0;
@@ -183,6 +190,6 @@ MyMessage& MyNodeItem::_msg_set( const uint8_t child,
 		const bool ack)
 {
 	return build( _msgTmp, destination, getChildId(child), C_SET,
-			getChildSensor(child), ack);
+			getChildType(child), ack);
 }
 

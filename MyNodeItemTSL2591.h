@@ -13,6 +13,7 @@ public:
 			MyNodeTime sleep );
 
 	virtual mysensor_sensor getChildSensor(uint8_t child);
+	virtual mysensor_data getChildType(uint8_t child);
 	virtual bool before(void);
 	virtual bool actionPollRun(void);
 

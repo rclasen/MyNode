@@ -15,6 +15,11 @@ mysensor_sensor MyNodeItemTSL2591::getChildSensor(uint8_t child)
 	return S_LIGHT_LEVEL;
 };
 
+mysensor_data MyNodeItemTSL2591::getChildType(uint8_t child)
+{
+	return V_LIGHT_LEVEL;
+};
+
 bool MyNodeItemTSL2591::before(void)
 {
 	_sensor.begin();
