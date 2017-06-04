@@ -146,47 +146,68 @@ void MyNode::setup()
 
 void MyNode::loop()
 {
-#if MYNODE_DEBUG
-	Serial.print(F("MN loop time: ")); Serial.println( MyNodeNow());
-#endif
-
-	MyNodeTime next_sleep = MYNODE_TIME_NONE;
-
+	// run items... which might take some time
 	for( uint8_t i = 0; i < _itemn; ++i ){
+		MyNodeTime now = MyNodeNow();
 		MyNodeTime next = _itemv[i]->getNextTime();
+		MyNodeTime remaining = next - MyNodeNow();
 #if MYNODE_DEBUG
 		Serial.print(F("MN loop item i="));
 		Serial.print(i);
+		Serial.print(F(" now="));
+		Serial.print(now);
 		Serial.print(F(" next="));
-		Serial.println(next);
+		Serial.print(next);
+		Serial.print(F(" remaining="));
+		Serial.println(remaining);
 #endif
-		if( next <= MyNodeNow() ){
+		if( remaining > MYNODE_TIME_MAXDUR )
 			_itemv[i]->runAction();
-
-			next = _itemv[i]->getNextTime();
-#if MYNODE_DEBUG
-			Serial.print(F("MN loop item i="));
-			Serial.print(i);
-			Serial.print(F(" ran, next="));
-			Serial.println(next);
-#endif
-		}
-
-		if( next <= next_sleep )
-			next_sleep = next;
 	}
 
+	// now do a quick run to calculate sleep
+	MyNodeTime sleep_needed = MYNODE_TIME_MAXDUR;
 	MyNodeTime now = MyNodeNow();
-	if( next_sleep <= now )
+
+	for( uint8_t i = 0; i < _itemn; ++i ){
+		MyNodeTime next = _itemv[i]->getNextTime();
+		MyNodeTime remaining = next - now;
+
+		if( remaining > MYNODE_TIME_MAXDUR ){
+			sleep_needed = 0;
+
+		} else if( remaining < sleep_needed ){
+			sleep_needed = remaining;
+
+		}
+#if MYNODE_DEBUG
+		Serial.print(F("MN loop item i="));
+		Serial.print(i);
+		Serial.print(F(" now="));
+		Serial.print(now);
+		Serial.print(F(" next="));
+		Serial.print(next);
+		Serial.print(F(" remaining="));
+		Serial.print(remaining);
+		Serial.print(F(" sleep="));
+		Serial.println(sleep_needed);
+#endif
+	}
+
+	if( ! sleep_needed )
 		return;
 
-	MyNodeTime duration = next_sleep - now;
+	int8_t ret = sleep( sleep_needed );
 #if MYNODE_DEBUG
-	Serial.print(F("MN loop sleep="));
-	Serial.println(duration);
+	Serial.print(F("MN loop sleep return="));
+	Serial.println(ret);
 #endif
-	sleep( duration ); // TODO: check result, allow interrupts
-	MyNodeDelta( duration );
+	if( ret == MY_WAKE_UP_BY_TIMER ){
+		MyNodeDelta( sleep_needed );
+	} else {
+		// TODO: guess duration
+		// TODO: handle interrupt
+	}
 }
 
 void MyNode::receive(const MyMessage & msg)

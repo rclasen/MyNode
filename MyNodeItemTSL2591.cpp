@@ -33,11 +33,10 @@ bool MyNodeItemTSL2591::before(void)
 
 bool MyNodeItemTSL2591::actionPollRun(void)
 {
-	bool result = true;
-
 #if MYNODE_DEBUG
-	Serial.println(F("MyNodeItemTSL2591::sendAll"));
+	Serial.println(F("MNI TSL2591 actionPollRun"));
 #endif
+	_nextTime = MyNodeNext(_sleep);
 
 	uint32_t raw = _sensor.getFullLuminosity();
 	if( raw == UINT32_MAX ){
@@ -62,11 +61,12 @@ bool MyNodeItemTSL2591::actionPollRun(void)
 		Serial.println(F(" FAILED to get lux"));
 		lux=TSL2591_LUX_CLIPPED; // maxes out at 88 kLux
 	}
+
+	bool result = true;
 	result &= send(_msg_set(0).set(lux));
 	result &= send(_msg_set(1).set(visible));
 	result &= send(_msg_set(2).set(ir));
 
-	_nextTime = MyNodeNow() + _sleep;
 	return result;
 }
 

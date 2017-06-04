@@ -6,10 +6,7 @@
 
 #define MYNODE_DEBUG 1
 
-typedef uint32_t MyNodeTime;
-#define MYNODE_TIME_NONE UINT32_MAX
-MyNodeTime MyNodeNow( void );
-void MyNodeDelta( MyNodeTime delta );
+#include "MyNodeTime.h"
 
 enum {
 	MYNODE_CHILD_CONFIG = 0,
@@ -22,6 +19,7 @@ typedef enum {
 	MYNODE_ACTION_INIT,
 	MYNODE_ACTION_POLLPREPARE,
 	MYNODE_ACTION_POLLRUN,
+	MYNODE_ACTION_LAST,
 } MyNodeAction;
 
 // interfacing with actual sensor/actor (=item)
