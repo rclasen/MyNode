@@ -16,7 +16,7 @@ protected:
 
 private:
 	MyNodeTime _sleep;
-	uint16_t _min, _range;
+	uint16_t _min, _max;
 };
 
 #endif

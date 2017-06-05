@@ -6,21 +6,30 @@ MyNodeItemBattery::MyNodeItemBattery( uint8_t analog_pin, uint8_t vcc_pin,
 		vcc_pin,  50 )
 {
 	_sleep = sleep;
-	_range = max - min;
+	_max = max;
 	_min = min;
 	setChild(0, MYNODE_CHILD_BATTERY, S_MULTIMETER );
 };
 
 void MyNodeItemBattery::actionPollRun( void )
 {
-	nextPoll( _sleep );
+	nextActionPoll( _sleep );
 
 	uint16_t mvolt = getMVolt();
 	powerOff();
 
-	float volt = .0001 * mvolt;
-	uint8_t level = ( mvolt <= _min ) ? 0
-		: 100.0 * (mvolt - _min)/_range;
+	float volt = .001 * mvolt;
+
+	uint8_t level;
+	if( mvolt <= _min ){
+		level = 0;
+
+	} else if( mvolt > _max ){
+		level = 100;
+
+	} else {
+		level = 100.0 * (mvolt - _min) / (_max - _min);;
+	}
 
 #if MYNODE_DEBUG
 	Serial.print(F("MNI Battery volt="));
