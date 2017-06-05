@@ -2,12 +2,16 @@
 
 MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
 		uint8_t ir, MyNodeTime sleep  ) :
-	MyNodeItem( 3 )
+	MyNodeItem( 3 ),
+	alux( 5 ),
+	avis( 5 ),
+	air( 5 )
 {
 	_sleep = sleep;
 	setChild( 0, lux, S_LIGHT_LEVEL );
 	setChild( 1, visible, S_LIGHT_LEVEL );
 	setChild( 2, ir, S_LIGHT_LEVEL );
+	nextSend = MyNodeNow();
 };
 
 void MyNodeItemTSL2591::before(void)
@@ -50,6 +54,7 @@ void MyNodeItemTSL2591::actionPollPrepare(void)
 void MyNodeItemTSL2591::actionPollRun(void)
 {
 	nextAction( MYNODE_ACTION_POLLRUN, _sleep ); // TODO: actionPollPrepare
+	MyNodeTime now = MyNodeNow();
 
 	uint32_t raw = _sensor.getFullLuminosity();
 	if( raw == UINT32_MAX ){
@@ -64,21 +69,29 @@ void MyNodeItemTSL2591::actionPollRun(void)
 
 #if MYNODE_DEBUG
 	Serial.println(F("TSL2591"));
-	Serial.print(F(" raw: ")); Serial.println( raw );
-	Serial.print(F(" full: ")); Serial.println( full );
-	Serial.print(F(" ir: ")); Serial.println( ir );
-	Serial.print(F(" visible: ")); Serial.println( visible );
 	Serial.print(F(" lux: ")); Serial.println( lux );
+	Serial.print(F(" visible: ")); Serial.println( visible );
+	Serial.print(F(" ir: ")); Serial.println( ir );
 #endif
+
+	air.add( ir );
+	avis.add( visible );
+	alux.add( lux );
 
 	if( lux >= TSL2591_LUX_CLIPPED ){
 		Serial.println(F("!TSL2591 lux"));
-		lux=TSL2591_LUX_CLIPPED; // maxes out at 88 kLux
 	}
 
-	send(_msg_set(0, V_LIGHT_LEVEL).set(lux));
-	send(_msg_set(1, V_LIGHT_LEVEL).set(visible));
-	send(_msg_set(2, V_LIGHT_LEVEL).set(ir));
+	if( nextSend - now < MYNODE_TIME_MAXDUR )
+		return;
+
+	Serial.println(F("TSL2591 send"));
+	nextSend = now + 5 * _sleep;
+
+	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc()));
+	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc()));
+	send(_msg_set(2, V_LIGHT_LEVEL).set(air.calc()));
+
 	// TODO: handle failed send
 }
 

@@ -6,6 +6,7 @@
 #include <Adafruit_TSL2591.h>
 
 #include "MyNodeItem.h"
+#include "MyAvg.h"
 
 class MyNodeItemTSL2591 : public MyNodeItem {
 public:
@@ -23,7 +24,9 @@ protected:
 
 private:
 	Adafruit_TSL2591 _sensor;
-	MyNodeTime _sleep;
+	MyNodeTime _sleep, nextSend;
+	MyAvg<uint16_t> avis, air;
+	MyAvg<uint32_t> alux;
 };
 
 #endif
