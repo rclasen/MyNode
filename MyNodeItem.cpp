@@ -1,4 +1,5 @@
 #include "MyNodeItem.h"
+#include "MyNodePanic.h";
 
 MyMessage _nodeMsg;
 
@@ -11,6 +12,10 @@ MyNodeItem::MyNodeItem( uint8_t childc )
 {
 	_childc = childc;
 	_childv = new MyNodeItemChild[childc]();
+	if( ! _childv ){
+		MyNodePanic();
+		return;
+	}
 	nextAction( MYNODE_ACTION_INIT );
 }
 

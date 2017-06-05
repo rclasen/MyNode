@@ -12,6 +12,10 @@
 
 // This core layer just does scheduling / dispatching to items
 
+// TODO: make itemv extern... for static allocation in sketch
+// TODO: or use define for static itemv allocation
+// TODO: remove clientv, lookup IDs on items
+
 void MyNodeInit( uint8_t itemc = 3, uint8_t childc = 5 );
 #if do_deletes
 void MyNodeEnd( void );

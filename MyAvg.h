@@ -1,6 +1,8 @@
 #ifndef MyAvg_h
 #define MyAvg_h
 
+#include "MyNodePanic.h"
+
 // no class as this allows allocating custom sized lists
 // without need for remembering list address and size.
 // i.e. they're just needed during the lifetime of the function calls
@@ -33,6 +35,8 @@ T MyAvgCalc( T *list, const uint8_t size, const uint8_t have, const uint8_t next
 
 // and as class:
 
+// TODO: use define for static list allocation
+
 template <class T>
 class MyAvg {
 private:
@@ -40,9 +44,13 @@ private:
 	uint8_t _size, _have, _next;
 
 public:
-	MyAvg( uint8_t size )
+	MyAvg( uint8_t size = 5 )
 	{
 		_list = new T[size];
+		if( ! _list ){
+			MyNodePanic();
+			return;
+		}
 		_size = size;
 		_have = 0;
 		_next = 0;

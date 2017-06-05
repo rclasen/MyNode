@@ -25,13 +25,15 @@ typedef enum {
 
 #define MYNODE_PIN_NONE UINT8_MAX
 
+// TODO: use define for static clientv allocation
+
 class MyNodeItemChild {
 public:
 	MyNodeItemChild( uint8_t _id = MYNODE_CHILD_NONE, mysensor_sensor
 			_sensor = S_CUSTOM ) : id(_id), sensor(_sensor) {};
 
 	uint8_t id;
-	mysensor_sensor sensor;
+	uint8_t sensor;
 };
 
 extern MyMessage _nodeMsg;

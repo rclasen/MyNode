@@ -11,6 +11,7 @@ MyNodeItem **_itemv = NULL;	// item array
 uint8_t _childc = 0;		// child count
 uint8_t *_childv = NULL;	// child -> item mapping
 
+uint16_t hwFreeMem();		// from MySensors/hal/architecture/MyHw*.cpp
 
 /************************************************************
  * MyNode
@@ -18,6 +19,10 @@ uint8_t *_childv = NULL;	// child -> item mapping
 
 void MyNodeInit( uint8_t itemc, uint8_t childc )
 {
+#if MYNODE_DEBUG
+	Serial.print(F("NM free memory: "));
+	Serial.println(hwFreeMem());
+#endif
 
 	_itemv = new MyNodeItem*[itemc](NULL);
 	if( _itemv == NULL ){
@@ -90,6 +95,10 @@ void MyNodeRegisterItem( MyNodeItem *item )
 
 void MyNodeBefore()
 {
+#if MYNODE_DEBUG
+	Serial.print(F("NM free memory: "));
+	Serial.println(hwFreeMem());
+#endif
 	for( uint8_t i = 0; i < _itemn; ++i )
 		_itemv[i]->before();
 }
