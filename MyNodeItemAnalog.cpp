@@ -8,6 +8,8 @@ MyNodeItemAnalog::MyNodeItemAnalog( uint8_t analog_pin, uint8_t vcc_pin,
 	_analog = analog_pin;
 	_vcc = vcc_pin;
 	_wait = wait;
+
+	nextPoll();
 };
 
 
@@ -21,6 +23,26 @@ bool MyNodeItemAnalog::before( void )
 	return true;
 }
 
+bool MyNodeItemAnalog::runAction( MyNodeAction action )
+{
+	switch(action){
+	case MYNODE_ACTION_POLLRUN:
+		return actionPollRun();
+		break;
+		;;
+
+	case MYNODE_ACTION_INIT:
+	case MYNODE_ACTION_POLLPREPARE:
+		return actionPollPrepare();;
+		break;
+		;;
+	}
+
+	Serial.print(F("MNI Analog bad action="));
+	Serial.println(action);
+	return false;
+}
+
 bool MyNodeItemAnalog::actionPollPrepare( void )
 {
 #if MYNODE_DEBUG
@@ -28,7 +50,10 @@ bool MyNodeItemAnalog::actionPollPrepare( void )
 #endif
 	if( _vcc != MYNODE_PIN_NONE ){
 		powerOn();
-		_nextTime = MyNodeNext(_wait);
+		nextAction( MYNODE_ACTION_POLLRUN, _wait );
+
+	} else {
+		nextAction( MYNODE_ACTION_POLLRUN );
 	}
 
 	return true;

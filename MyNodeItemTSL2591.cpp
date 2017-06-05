@@ -5,20 +5,10 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
 	MyNodeItem( 3 )
 {
 	_sleep = sleep;
-	setChildId( 0, lux );
-	setChildId( 1, visible );
-	setChildId( 2, ir );
-	_nextAction = MYNODE_ACTION_POLLRUN; // TODO: actionPollPrepare
-};
-
-mysensor_sensor MyNodeItemTSL2591::getChildSensor(uint8_t child)
-{
-	return S_LIGHT_LEVEL;
-};
-
-mysensor_data MyNodeItemTSL2591::getChildType(uint8_t child)
-{
-	return V_LIGHT_LEVEL;
+	setChild( 0, lux, S_LIGHT_LEVEL );
+	setChild( 1, visible, S_LIGHT_LEVEL );
+	setChild( 2, ir, S_LIGHT_LEVEL );
+	nextAction( MYNODE_ACTION_POLLRUN ); // TODO: actionPollPrepare
 };
 
 bool MyNodeItemTSL2591::before(void)
@@ -32,9 +22,32 @@ bool MyNodeItemTSL2591::before(void)
 	_sensor.setTiming(TSL2591_INTEGRATIONTIME_200MS);
 };
 
+bool MyNodeItemTSL2591::runAction( MyNodeAction action )
+{
+	switch(action){
+	case MYNODE_ACTION_POLLRUN:
+		return actionPollRun();
+		break;
+		;;
+
+	case MYNODE_ACTION_INIT:
+	case MYNODE_ACTION_POLLPREPARE:
+		return actionPollPrepare();;
+		break;
+		;;
+	}
+
+	Serial.print(F("MNI TSL2591 bad action="));
+	Serial.println(action);
+	return false;
+}
+
 bool MyNodeItemTSL2591::actionPollPrepare(void)
 {
-	// TODO: actionPollPrepare
+#if MYNODE_DEBUG
+	Serial.println(F("MNI TSL2591 actionPollPrepare"));
+#endif
+	nextAction( MYNODE_ACTION_POLLRUN ); // TODO: actionPollPrepare
 	return true;
 }
 
@@ -43,8 +56,7 @@ bool MyNodeItemTSL2591::actionPollRun(void)
 #if MYNODE_DEBUG
 	Serial.println(F("MNI TSL2591 actionPollRun"));
 #endif
-	_nextTime = MyNodeNext(_sleep);
-	_nextAction = MYNODE_ACTION_POLLRUN; // TODO: actionPollPrepare
+	nextAction( MYNODE_ACTION_POLLRUN, _sleep ); // TODO: actionPollPrepare
 
 	uint32_t raw = _sensor.getFullLuminosity();
 	if( raw == UINT32_MAX ){
@@ -71,9 +83,9 @@ bool MyNodeItemTSL2591::actionPollRun(void)
 	}
 
 	bool result = true;
-	result &= send(_msg_set(0).set(lux));
-	result &= send(_msg_set(1).set(visible));
-	result &= send(_msg_set(2).set(ir));
+	result &= send(_msg_set(0, V_LIGHT_LEVEL).set(lux));
+	result &= send(_msg_set(1, V_LIGHT_LEVEL).set(visible));
+	result &= send(_msg_set(2, V_LIGHT_LEVEL).set(ir));
 
 	return result;
 }

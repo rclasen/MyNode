@@ -19,10 +19,22 @@ typedef enum {
 	MYNODE_ACTION_INIT,
 	MYNODE_ACTION_POLLPREPARE,
 	MYNODE_ACTION_POLLRUN,
+	MYNODE_ACTION_NONE,
 	MYNODE_ACTION_LAST,
 } MyNodeAction;
 
 #define MYNODE_PIN_NONE UINT8_MAX
+
+class MyNodeItemChild {
+public:
+	MyNodeItemChild( uint8_t _id = MYNODE_CHILD_NONE, mysensor_sensor
+			_sensor = S_CUSTOM ) : id(_id), sensor(_sensor) {};
+
+	uint8_t id;
+	mysensor_sensor sensor;
+};
+
+extern MyMessage _nodeMsg;
 
 // interfacing with actual sensor/actor (=item)
 // init, poll, ...
@@ -34,41 +46,58 @@ public:
 	virtual ~MyNodeItem();
 
 	// for MyNode init:
-	bool MyNodeItem::setChildId(uint8_t child, uint8_t id);
 	uint8_t getChildCount( void );
 	uint8_t getChildId(uint8_t child);
-	uint8_t getChildMax( void );
-
-	virtual mysensor_sensor getChildSensor(uint8_t child);
-	virtual mysensor_data getChildType(uint8_t child);
 
 	// dispatched by MyNode:
 	virtual bool before(void);
 	bool presentation(void);
+	bool schedule( void );
 
-	MyNodeAction getNextAction( void );
 	MyNodeTime getNextTime( void );
-	virtual bool runAction( void );
 
-	virtual bool actionInit(void);
-	virtual bool actionPollPrepare(void);
-	virtual bool actionPollRun(void);
-
-	// TODO: more actions?
 	// TODO: runtime config?
 	// TODO: receive data?
 
 protected:
-	MyMessage& _msg_set( const uint8_t child,
+	bool MyNodeItem::setChild(uint8_t child, uint8_t id, mysensor_sensor sensor );
+
+	virtual bool runAction( MyNodeAction action );
+
+	MyNodeAction getNextAction( void );
+
+	inline void nextAt( MyNodeAction action, MyNodeTime time )
+	{
+#if MYNODE_DEBUG
+		Serial.print(F("MNI next action="));
+		Serial.print(action);
+		Serial.print(F(" time="));
+		Serial.println(time);
+#endif
+		_nextAction = action;
+		_nextTime = time;
+	};
+	inline void nextAction( MyNodeAction action, MyNodeTime delay = 0 )
+	{
+		nextAt( action, MyNodeNext( delay ));
+	};
+
+	inline MyMessage& _msg_set( const uint8_t child,
+			const mysensor_data vtype,
 			const uint8_t destination = 0,
-			const bool ack = false);
+			const mysensor_command cmd = C_SET,
+			const bool ack = false)
+	{
+		return build( _nodeMsg, destination, getChildId(child), cmd,
+				vtype, ack);
+	};
 
 	MyNodeAction _nextAction;
 	MyNodeTime _nextTime;
 
 private:
 	uint8_t _childc;	// child count
-	uint8_t *_childv;	// child IDs
+	MyNodeItemChild *_childv;	// child IDs
 };
 
 #endif

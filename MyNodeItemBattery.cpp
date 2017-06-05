@@ -8,23 +8,12 @@ MyNodeItemBattery::MyNodeItemBattery( uint8_t analog_pin, uint8_t vcc_pin,
 	_sleep = sleep;
 	_range = max - min;
 	_min = min;
-	setChildId(0, MYNODE_CHILD_BATTERY );
+	setChild(0, MYNODE_CHILD_BATTERY, S_MULTIMETER );
 };
-
-mysensor_sensor MyNodeItemBattery::getChildSensor(uint8_t child)
-{
-	return S_MULTIMETER;
-};
-
-mysensor_data MyNodeItemBattery::getChildType(uint8_t child)
-{
-	return V_VOLTAGE;
-};
-
 
 bool MyNodeItemBattery::actionPollRun( void )
 {
-	_nextTime = MyNodeNext( _sleep );
+	nextPoll( _sleep );
 
 	uint16_t mvolt = getMVolt();
 	powerOff();
@@ -42,7 +31,7 @@ bool MyNodeItemBattery::actionPollRun( void )
 
 	bool result = true;
 
-	result &= send(_msg_set(0).set(volt,2));
+	result &= send(_msg_set(0, V_VOLTAGE).set(volt,2));
 	result &= sendBatteryLevel( level );
 
 	return result;

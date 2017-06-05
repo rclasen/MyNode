@@ -11,8 +11,7 @@ public:
 			uint16_t min = 2600,  uint16_t max = 3400,
 			MyNodeTime sleep = (24 * 3600 * 1000) );
 
-	virtual mysensor_sensor getChildSensor(uint8_t child);
-	virtual mysensor_data getChildType(uint8_t child);
+protected:
 	virtual bool actionPollRun(void);
 
 private:

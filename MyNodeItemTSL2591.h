@@ -14,11 +14,12 @@ public:
 
 	// TODO: compile time options to set gain and integration time
 
-	virtual mysensor_sensor getChildSensor(uint8_t child);
-	virtual mysensor_data getChildType(uint8_t child);
 	virtual bool before(void);
-	virtual bool actionPollPrepare(void);
-	virtual bool actionPollRun(void);
+
+protected:
+	virtual bool runAction( MyNodeAction action );
+	bool actionPollPrepare(void);
+	bool actionPollRun(void);
 
 private:
 	Adafruit_TSL2591 _sensor;

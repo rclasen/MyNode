@@ -162,12 +162,13 @@ void MyNode::loop()
 		Serial.println(remaining);
 #endif
 		if( remaining > MYNODE_TIME_MAXDUR )
-			_itemv[i]->runAction();
+			_itemv[i]->schedule();
 	}
 
 	// now do a quick run to calculate sleep
 	MyNodeTime sleep_needed = MYNODE_TIME_MAXDUR;
 	MyNodeTime now = MyNodeNow();
+	uint8_t nextitem = MYNODE_ITEM_NONE;
 
 	for( uint8_t i = 0; i < _itemn; ++i ){
 		MyNodeTime next = _itemv[i]->getNextTime();
@@ -175,25 +176,20 @@ void MyNode::loop()
 
 		if( remaining > MYNODE_TIME_MAXDUR ){
 			sleep_needed = 0;
+			nextitem = i;
 
 		} else if( remaining < sleep_needed ){
 			sleep_needed = remaining;
-
+			nextitem = i;
 		}
-#if MYNODE_DEBUG
-		Serial.print(F("MN loop item i="));
-		Serial.print(i);
-		Serial.print(F(" now="));
-		Serial.print(now);
-		Serial.print(F(" next="));
-		Serial.print(next);
-		Serial.print(F(" remaining="));
-		Serial.print(remaining);
-		Serial.print(F(" sleep="));
-		Serial.println(sleep_needed);
-#endif
 	}
 
+#if MYNODE_DEBUG
+	Serial.print(F("MN loop sleep="));
+	Serial.print(sleep_needed);
+	Serial.print(F(" by="));
+	Serial.println(nextitem);
+#endif
 	if( ! sleep_needed )
 		return;
 
