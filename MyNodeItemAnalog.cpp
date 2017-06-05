@@ -8,8 +8,6 @@ MyNodeItemAnalog::MyNodeItemAnalog( uint8_t analog_pin, uint8_t vcc_pin,
 	_analog = analog_pin;
 	_vcc = vcc_pin;
 	_wait = wait;
-
-	nextPoll();
 };
 
 
@@ -19,6 +17,8 @@ void MyNodeItemAnalog::before( void )
 		pinMode( _vcc, OUTPUT );
 		powerOff();
 	}
+
+	nextActionPoll();
 }
 
 void MyNodeItemAnalog::runAction( MyNodeAction action )

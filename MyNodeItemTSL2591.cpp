@@ -8,11 +8,12 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
 	setChild( 0, lux, S_LIGHT_LEVEL );
 	setChild( 1, visible, S_LIGHT_LEVEL );
 	setChild( 2, ir, S_LIGHT_LEVEL );
-	nextAction( MYNODE_ACTION_POLLRUN ); // TODO: actionPollPrepare
 };
 
 void MyNodeItemTSL2591::before(void)
 {
+	nextAction( MYNODE_ACTION_POLLRUN ); // TODO: actionPollPrepare
+
 	_sensor.begin();
 	_sensor.setGain(TSL2591_GAIN_LOW);
 	//_sensor.setGain(TSL2591_GAIN_HIGH);

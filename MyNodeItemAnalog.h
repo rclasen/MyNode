@@ -13,7 +13,7 @@ public:
 	virtual void before(void);
 
 protected:
-	inline void nextPoll( MyNodeTime delay = 0 )
+	inline void nextActionPoll( MyNodeTime delay = 0 )
 	{
 		nextAction( ( _vcc == MYNODE_PIN_NONE)
 			? MYNODE_ACTION_POLLRUN
