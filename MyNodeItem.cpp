@@ -52,6 +52,24 @@ uint8_t MyNodeItem::getChildId(uint8_t child)
 	return _childv[child].id;
 }
 
+uint8_t MyNodeItem::getChildById(uint8_t id)
+{
+	for( uint8_t c = 0; c < _childc; ++c ){
+		if( _childv[c].id == MYNODE_CHILD_NONE )
+			continue;
+
+		if( _childv[c].id == id )
+			return c;
+	}
+
+	return MYNODE_CHILD_NONE;
+}
+
+bool MyNodeItem::haveChildId(uint8_t id)
+{
+	return getChildById( id ) != MYNODE_CHILD_NONE;
+}
+
 void MyNodeItem::before( void )
 {
 	nextAction( MYNODE_ACTION_POLLPREPARE );

@@ -52,6 +52,8 @@ public:
 	// for MyNode init:
 	uint8_t getChildCount( void );
 	uint8_t getChildId(uint8_t child);
+	uint8_t getChildById(uint8_t id);
+	bool haveChildId(uint8_t id);
 
 	// dispatched by MyNode:
 	virtual void before(void);

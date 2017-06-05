@@ -6,18 +6,13 @@ uint8_t _itemc = 0;		// item count
 uint8_t _itemn = 0;		// next item index
 MyNodeItem **_itemv = NULL;	// item array
 
-// map child -> item
-// duplicates Items' _childv
-uint8_t _childc = 0;		// child count
-uint8_t *_childv = NULL;	// child -> item mapping
-
 uint16_t hwFreeMem();		// from MySensors/hal/architecture/MyHw*.cpp
 
 /************************************************************
  * MyNode
  */
 
-void MyNodeInit( uint8_t itemc, uint8_t childc )
+void MyNodeInit( uint8_t itemc )
 {
 #if MYNODE_DEBUG
 	Serial.print(F("NM free memory: "));
@@ -31,13 +26,6 @@ void MyNodeInit( uint8_t itemc, uint8_t childc )
 	}
 	_itemc = itemc;
 	_itemn = 0;
-
-	_childv = new uint8_t[childc](MYNODE_ITEM_NONE);
-	if( _childv == NULL ){
-		MyNodePanic();
-		return;
-	}
-	_childc = childc;
 }
 
 #if do_deletes
@@ -46,7 +34,6 @@ void MyNodeEnd()
 	for( uint8_t i = 0; i < _itemn; ++i )
 		delete _itemv[i];
 	delete _itemv;
-	delete _childv;
 }
 #endif
 
@@ -75,21 +62,6 @@ void MyNodeRegisterItem( MyNodeItem *item )
 	Serial.print(F(" num="));
 	Serial.println(num);
 #endif
-	for( uint8_t c = 0; c < num; ++c ){
-		uint8_t id = item->getChildId( c );
-
-		if( id == MYNODE_CHILD_NONE )
-			continue;
-
-		if( id >= _childc ){
-			Serial.println(F("!MN REG: childc"));
-			MyNodePanic();
-			return;
-		}
-
-		_childv[id] = _itemn;
-	}
-
 	++_itemn;
 }
 
