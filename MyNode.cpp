@@ -2,22 +2,40 @@
 
 #define MYNODE_ITEM_NONE 255
 
+uint8_t _itemc = 0;		// item count
+uint8_t _itemn = 0;		// next item index
+MyNodeItem **_itemv = NULL;	// item array
+
+// map child -> item
+// duplicates Items' _childv
+uint8_t _childc = 0;		// child count
+uint8_t *_childv = NULL;	// child -> item mapping
+
+
 /************************************************************
  * MyNode
  */
 
-MyNode::MyNode( uint8_t itemc, uint8_t childc )
+void MyNodeInit( uint8_t itemc, uint8_t childc )
 {
 
-	_itemn = 0;
+	_itemv = new MyNodeItem*[itemc](NULL);
+	if( _itemv == NULL ){
+		MyNodePanic();
+		return;
+	}
 	_itemc = itemc;
-	_itemv = new MyNodeItem*[_itemc](NULL);
+	_itemn = 0;
 
+	_childv = new uint8_t[childc](MYNODE_ITEM_NONE);
+	if( _childv == NULL ){
+		MyNodePanic();
+		return;
+	}
 	_childc = childc;
-	_childv = new uint8_t[_childc](MYNODE_ITEM_NONE);
 }
 
-MyNode::~MyNode()
+void MyNodeEnd()
 {
 	for( uint8_t i = 0; i < _itemn; ++i )
 		delete _itemv[i];
@@ -25,134 +43,82 @@ MyNode::~MyNode()
 	delete _childv;
 }
 
-bool MyNode::registerItem( MyNodeItem *item )
+void MyNodeRegisterItem( MyNodeItem *item )
 {
-#if MYNODE_DEBUG
-	Serial.print(F("MN registerItem itemn="));
-	Serial.print(_itemn);
-	Serial.print(F(" item="));
-	Serial.println((unsigned int)item);
-#endif
 	if( ! item ){
-		Serial.println(F("MN registerItem: itemn undefined"));
-		return false;
+		Serial.println(F("!MN REG: undefined"));
+		MyNodePanic();
+		return;
 	}
 
 	if( _itemn >= _itemc ){
-		Serial.println(F("MN registerItem: too many items"));
-		return false;
+		Serial.println(F("!MN REG: itemc"));
+		MyNodePanic();
+		return;
 	}
 
 	_itemv[_itemn] = item;
 
 	uint8_t num = item->getChildCount();
 #if MYNODE_DEBUG
-	Serial.print(F("MN registerItem num="));
+	Serial.print(F("MN REG i="));
+	Serial.print(_itemn);
+	Serial.print(F(" num="));
 	Serial.println(num);
+	Serial.print(F(" item="));
+	Serial.println((unsigned int)item);
 #endif
 	for( uint8_t c = 0; c < num; ++c ){
 		uint8_t id = item->getChildId( c );
-#if MYNODE_DEBUG
-		Serial.print(F("MN registerItem c="));
-		Serial.print(c);
-		Serial.print(F(" id="));
-		Serial.println(id);
-#endif
 
 		if( id == MYNODE_CHILD_NONE )
 			continue;
 
 		if( id >= _childc ){
-			Serial.println(F("MN registerItem: child id out of range"));
-			return false;
+			Serial.println(F("!MN REG: childc"));
+			MyNodePanic();
+			return;
 		}
 
 		_childv[id] = _itemn;
 	}
 
 	++_itemn;
-	return true;
 }
 
-void MyNode::before()
+void MyNodeBefore()
 {
-#if MYNODE_DEBUG
-	Serial.print(F("MN before itemc="));
-	Serial.print(_itemc);
-	Serial.print(F(" itemn="));
-	Serial.print(_itemn);
-	Serial.print(F(" childc="));
-	Serial.println(_childc);
-#endif
-	for( uint8_t i = 0; i < _itemn; ++i ){
-#if MYNODE_DEBUG
-		Serial.print(F("MN before"));
-		Serial.print(F(" i="));
-		Serial.print(i);
-		Serial.print(F(" item="));
-		Serial.println((unsigned int)_itemv[i]);
-#endif
+	for( uint8_t i = 0; i < _itemn; ++i )
 		_itemv[i]->before();
-	}
 }
 
-void MyNode::presentation( PGM_P name, PGM_P version )
+void MyNodePresentation( PGM_P name, PGM_P version )
 {
-#if MYNODE_DEBUG
-	Serial.println(F("MN presentation"));
-#endif
-#if 1
 	{
 		char buf[MAX_PAYLOAD];
 
 		strncpy_P(buf, name, MAX_PAYLOAD );
 		buf[MAX_PAYLOAD-1] = 0;
-#if MYNODE_DEBUG
-		Serial.print(F("MN sketch name: ")); Serial.println(buf);
-#endif
 		sendSketchInfo( buf, NULL );
 
 		strncpy_P(buf, version, MAX_PAYLOAD );
 		buf[MAX_PAYLOAD-1] = 0;
-#if MYNODE_DEBUG
-		Serial.print(F("MN sketch version: ")); Serial.println(buf);
-#endif
 		sendSketchInfo( NULL, buf );
 	}
-#endif
-	for( uint8_t i = 0; i < _itemn; ++i ){
-#if MYNODE_DEBUG
-		Serial.print(F("MN presentation i="));
-		Serial.print(i);
-		Serial.print(F(" item="));
-		Serial.println((unsigned int)_itemv[i]);
-#endif
 
-		bool result =  _itemv[i]->presentation();
-#if MYNODE_DEBUG
-		Serial.print(F("MN presentation result="));
-		Serial.println(result);
-#endif
-	}
+	for( uint8_t i = 0; i < _itemn; ++i )
+		_itemv[i]->presentation();
 }
 
-void MyNode::setup()
-{
-#if MYNODE_DEBUG
-	Serial.println(F("MN setup"));
-#endif
-	// TODO: setup()
-}
-
-void MyNode::loop()
+void MyNodeLoop()
 {
 	// run items... which might take some time
 	for( uint8_t i = 0; i < _itemn; ++i ){
 		MyNodeTime now = MyNodeNow();
 		MyNodeTime next = _itemv[i]->getNextTime();
 		MyNodeTime remaining = next - MyNodeNow();
-#if MYNODE_DEBUG
-		Serial.print(F("MN loop item i="));
+#if 0
+		Serial.print(F("MN loop i="));
 		Serial.print(i);
 		Serial.print(F(" now="));
 		Serial.print(now);
@@ -195,13 +161,11 @@ void MyNode::loop()
 
 	int8_t ret = sleep( sleep_needed );
 	if( ret == MY_WAKE_UP_BY_TIMER ){
-#if MYNODE_DEBUG
-		Serial.println(F("MN loop sleep completed"));
-#endif
 		MyNodeDelta( sleep_needed );
+
 	} else {
 #if MYNODE_DEBUG
-		Serial.print(F("MN loop sleep cancelled by int="));
+		Serial.print(F("MN loop int="));
 		Serial.println(ret);
 #endif
 		// TODO: guess actual sleep duration
@@ -209,7 +173,7 @@ void MyNode::loop()
 	}
 }
 
-void MyNode::receive(const MyMessage & msg)
+void MyNodeReceive(const MyMessage & msg)
 {
 #if MYNODE_DEBUG
 	Serial.println(F("MN receive"));
@@ -217,41 +181,11 @@ void MyNode::receive(const MyMessage & msg)
 	// TODO: receive()
 }
 
-void MyNode::receiveTime(unsigned long ts)
+void MyNodeReceiveTime(unsigned long ts)
 {
 #if MYNODE_DEBUG
 	Serial.println(F("MN receiveTime"));
 #endif
 	// TODO: receiveTime()
-}
-
-uint8_t MyNode::getItemCount( void )
-{
-	return _itemn;
-}
-
-MyNodeItem *MyNode::getItem( uint8_t item )
-{
-	if( item >= _itemn )
-		return NULL;
-
-	return _itemv[item];
-}
-
-uint8_t MyNode::getChildCount( void )
-{
-	return _childc;
-}
-
-MyNodeItem *MyNode::getItemChild( uint8_t child )
-{
-	if( child >= _childc )
-		return NULL;
-
-	uint8_t item = _childv[child];
-	if( item >= _itemn ) // covers MYNODE_ITEM_NONE, too
-		return NULL;
-
-	return _itemv[item];
 }
 

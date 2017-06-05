@@ -11,7 +11,7 @@ MyNodeItemBattery::MyNodeItemBattery( uint8_t analog_pin, uint8_t vcc_pin,
 	setChild(0, MYNODE_CHILD_BATTERY, S_MULTIMETER );
 };
 
-bool MyNodeItemBattery::actionPollRun( void )
+void MyNodeItemBattery::actionPollRun( void )
 {
 	nextPoll( _sleep );
 
@@ -22,18 +22,15 @@ bool MyNodeItemBattery::actionPollRun( void )
 	uint8_t level = ( mvolt <= _min ) ? 0
 		: 100.0 * (mvolt - _min)/_range;
 
-#if #MYNODE_DEBUG
-	Serial.print(F("MNI Battery actionPollRun volt="));
+#if MYNODE_DEBUG
+	Serial.print(F("MNI Battery volt="));
 	Serial.print(volt);
 	Serial.print(F(" level="));
 	Serial.println(level);
 #endif
 
-	bool result = true;
-
-	result &= send(_msg_set(0, V_VOLTAGE).set(volt,2));
-	result &= sendBatteryLevel( level );
-
-	return result;
+	send(_msg_set(0, V_VOLTAGE).set(volt,2));
+	sendBatteryLevel( level );
+	// TODO: handle failed send
 }
 

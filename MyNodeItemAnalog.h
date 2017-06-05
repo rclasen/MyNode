@@ -10,7 +10,7 @@ public:
 			uint8_t vcc_pin = MYNODE_PIN_NONE,
 			MyNodeTime wait = 0);
 
-	virtual bool before(void);
+	virtual void before(void);
 
 protected:
 	inline void nextPoll( MyNodeTime delay = 0 )
@@ -21,13 +21,13 @@ protected:
 			delay );
 	};
 
-	virtual bool runAction(MyNodeAction action);
-	bool actionPollPrepare(void);
-	virtual bool actionPollRun(void) = 0;
+	virtual void runAction(MyNodeAction action);
+	void actionPollPrepare(void);
+	virtual void actionPollRun(void) = 0;
 
 	// enable/disable digital out pin to supply voltage to sensor
-	bool powerOn( void );
-	bool powerOff( void );
+	void powerOn( void );
+	void powerOff( void );
 
 	// get Millivolts
 	uint16_t getMVolt( void );

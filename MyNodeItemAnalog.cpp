@@ -13,41 +13,35 @@ MyNodeItemAnalog::MyNodeItemAnalog( uint8_t analog_pin, uint8_t vcc_pin,
 };
 
 
-bool MyNodeItemAnalog::before( void )
+void MyNodeItemAnalog::before( void )
 {
 	if( _vcc != MYNODE_PIN_NONE ){
 		pinMode( _vcc, OUTPUT );
 		powerOff();
 	}
-
-	return true;
 }
 
-bool MyNodeItemAnalog::runAction( MyNodeAction action )
+void MyNodeItemAnalog::runAction( MyNodeAction action )
 {
 	switch(action){
 	case MYNODE_ACTION_POLLRUN:
-		return actionPollRun();
-		break;
+		actionPollRun();
+		return;
 		;;
 
 	case MYNODE_ACTION_INIT:
 	case MYNODE_ACTION_POLLPREPARE:
-		return actionPollPrepare();;
-		break;
+		actionPollPrepare();;
+		return;
 		;;
 	}
 
-	Serial.print(F("MNI Analog bad action="));
+	Serial.print(F("!MNI Analog action="));
 	Serial.println(action);
-	return false;
 }
 
-bool MyNodeItemAnalog::actionPollPrepare( void )
+void MyNodeItemAnalog::actionPollPrepare( void )
 {
-#if MYNODE_DEBUG
-	Serial.println(F("MNI Ananlog actionPollPrepare"));
-#endif
 	if( _vcc != MYNODE_PIN_NONE ){
 		powerOn();
 		nextAction( MYNODE_ACTION_POLLRUN, _wait );
@@ -55,24 +49,18 @@ bool MyNodeItemAnalog::actionPollPrepare( void )
 	} else {
 		nextAction( MYNODE_ACTION_POLLRUN );
 	}
-
-	return true;
 }
 
-bool MyNodeItemAnalog::powerOn( void )
+void MyNodeItemAnalog::powerOn( void )
 {
 	if( _vcc != MYNODE_PIN_NONE )
 		digitalWrite( _vcc, HIGH );
-
-	return true;
 }
 
-bool MyNodeItemAnalog::powerOff( void )
+void MyNodeItemAnalog::powerOff( void )
 {
 	if( _vcc != MYNODE_PIN_NONE )
 		digitalWrite( _vcc, LOW );
-
-	return true;
 }
 
 uint16_t MyNodeItemAnalog::getMVolt( void )

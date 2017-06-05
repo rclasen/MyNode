@@ -14,12 +14,12 @@ public:
 
 	// TODO: compile time options to set gain and integration time
 
-	virtual bool before(void);
+	virtual void before(void);
 
 protected:
-	virtual bool runAction( MyNodeAction action );
-	bool actionPollPrepare(void);
-	bool actionPollRun(void);
+	virtual void runAction( MyNodeAction action );
+	void actionPollPrepare(void);
+	void actionPollRun(void);
 
 private:
 	Adafruit_TSL2591 _sensor;

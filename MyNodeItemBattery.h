@@ -12,7 +12,7 @@ public:
 			MyNodeTime sleep = (24 * 3600 * 1000) );
 
 protected:
-	virtual bool actionPollRun(void);
+	virtual void actionPollRun(void);
 
 private:
 	MyNodeTime _sleep;

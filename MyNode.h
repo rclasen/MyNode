@@ -2,45 +2,27 @@
 #define MyNode_h
 
 #include "MyNodeItem.h"
+#include "MyNodePanic.h"
 
 #define MYNODE_ITEM_NONE 255
 
-// hooks are called by mysensors core lib
-// manages children, sleep time, scheduling, ...
-// in therory "There can be only one" ... so, OO interface is just meant
-// for derived classes
-class MyNode {
-public:
-	MyNode( uint8_t itemc = 3, uint8_t childc = 5 );
-	virtual ~MyNode();
-	bool registerItem( MyNodeItem *item );
+// no need to waste space by using a class
+// as there must be a single node instance only
+// and customization should happen in MyNodeItems
 
-	// hooks to run from mysensors:
-	// needs to be setup manuall in your .ino
-	void before();
-	void presentation( PGM_P name, PGM_P version );
-	void setup();
-	void loop();
-	void receive(const MyMessage & msg);
-	void receiveTime(unsigned long ts);
+// This core layer just does scheduling / dispatching to items
 
-	// TODO:  heartbeat, periodic poll, battery status
+void MyNodeInit( uint8_t itemc = 3, uint8_t childc = 5 );
+void MyNodeEnd( void );
 
-protected:
-	uint8_t getItemCount( void );
-	MyNodeItem *getItem( uint8_t item );
-	uint8_t getChildCount( void );
-	MyNodeItem *getItemChild( uint8_t child );
+void MyNodeRegisterItem( MyNodeItem *item );
 
-private:
-	uint8_t _itemc;		// item count
-	uint8_t _itemn;		// next item index
-	MyNodeItem **_itemv;	// item array
-
-	// map child -> item
-	// duplicates Items' _childv
-	uint8_t _childc;	// child count
-	uint8_t *_childv;	// child -> item mapping
-};
+// hooks to run from mysensors:
+// need to be called manually in your .ino
+void MyNodeBefore();
+void MyNodePresentation( PGM_P name, PGM_P version );
+void MyNodeLoop();
+void MyNodeReceive(const MyMessage & msg);
+void MyNodeReceiveTime(unsigned long ts);
 
 #endif

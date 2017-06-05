@@ -50,9 +50,9 @@ public:
 	uint8_t getChildId(uint8_t child);
 
 	// dispatched by MyNode:
-	virtual bool before(void);
-	bool presentation(void);
-	bool schedule( void );
+	virtual void before(void);
+	void presentation(void);
+	void schedule( void );
 
 	MyNodeTime getNextTime( void );
 
@@ -60,23 +60,14 @@ public:
 	// TODO: receive data?
 
 protected:
-	bool MyNodeItem::setChild(uint8_t child, uint8_t id, mysensor_sensor sensor );
+	void MyNodeItem::setChild(uint8_t child, uint8_t id, mysensor_sensor sensor );
 
-	virtual bool runAction( MyNodeAction action );
+	virtual void runAction( MyNodeAction action );
 
 	MyNodeAction getNextAction( void );
 
-	inline void nextAt( MyNodeAction action, MyNodeTime time )
-	{
-#if MYNODE_DEBUG
-		Serial.print(F("MNI next action="));
-		Serial.print(action);
-		Serial.print(F(" time="));
-		Serial.println(time);
-#endif
-		_nextAction = action;
-		_nextTime = time;
-	};
+	void nextAt( MyNodeAction action, MyNodeTime time );
+
 	inline void nextAction( MyNodeAction action, MyNodeTime delay = 0 )
 	{
 		nextAt( action, MyNodeNext( delay ));
