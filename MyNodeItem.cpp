@@ -76,7 +76,9 @@ MyNodeTime MyNodeItem::getNextTime( void )
 void MyNodeItem::schedule( void )
 {
 #if MYNODE_DEBUG
-	Serial.print(F("MNI SCHED action="));
+	Serial.print(F("MNI SCHED item="));
+	Serial.print((unsigned int)this);
+	Serial.print(F(" ation="));
 	Serial.println(_nextAction);
 #endif
 	if( _nextAction == MYNODE_ACTION_NONE ){
@@ -101,7 +103,9 @@ void MyNodeItem::runAction( MyNodeAction action )
 void MyNodeItem::nextAt( MyNodeAction action, MyNodeTime time )
 {
 #if MYNODE_DEBUG
-	Serial.print(F("MNI NXT action="));
+	Serial.print(F("MNI NXT item="));
+	Serial.print((unsigned int)this);
+	Serial.print(F(" action="));
 	Serial.print(action);
 	Serial.print(F(" time="));
 	Serial.println(time);

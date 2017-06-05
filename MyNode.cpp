@@ -65,10 +65,10 @@ void MyNodeRegisterItem( MyNodeItem *item )
 #if MYNODE_DEBUG
 	Serial.print(F("MN REG i="));
 	Serial.print(_itemn);
+	Serial.print(F(" item="));
+	Serial.print((unsigned int)item);
 	Serial.print(F(" num="));
 	Serial.println(num);
-	Serial.print(F(" item="));
-	Serial.println((unsigned int)item);
 #endif
 	for( uint8_t c = 0; c < num; ++c ){
 		uint8_t id = item->getChildId( c );
@@ -119,16 +119,7 @@ void MyNodeLoop()
 		MyNodeTime now = MyNodeNow();
 		MyNodeTime next = _itemv[i]->getNextTime();
 		MyNodeTime remaining = next - MyNodeNow();
-#if 0
-		Serial.print(F("MN loop i="));
-		Serial.print(i);
-		Serial.print(F(" now="));
-		Serial.print(now);
-		Serial.print(F(" next="));
-		Serial.print(next);
-		Serial.print(F(" remaining="));
-		Serial.println(remaining);
-#endif
+
 		if( remaining > MYNODE_TIME_MAXDUR )
 			_itemv[i]->schedule();
 	}
@@ -142,6 +133,18 @@ void MyNodeLoop()
 		MyNodeTime next = _itemv[i]->getNextTime();
 		MyNodeTime remaining = next - now;
 
+#if MYNODE_DEBUG
+		Serial.print(F("MN loop i="));
+		Serial.print(i);
+		Serial.print(F(" item="));
+		Serial.print((unsigned int)_itemv[i]);
+		Serial.print(F(" now="));
+		Serial.print(now);
+		Serial.print(F(" next="));
+		Serial.print(next);
+		Serial.print(F(" remaining="));
+		Serial.println(remaining);
+#endif
 		if( remaining > MYNODE_TIME_MAXDUR ){
 			sleep_needed = 0;
 			nextitem = i;

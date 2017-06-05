@@ -1,14 +1,16 @@
-#ifndef MyNodeItemAnalog_h
-#define MyNodeItemAnalog_h
+#ifndef MyNodeItemVolt_h
+#define MyNodeItemVolt_h
 
 #include "MyNodeItem.h"
 #include "MyNodeVcc.h"
 
-class MyNodeItemAnalog : public MyNodeItem {
+class MyNodeItemVolt : public MyNodeItem {
 public:
-	MyNodeItemAnalog( uint8_t analog_pin,
+	MyNodeItemVolt( uint8_t child,
+			uint8_t analog_pin,
 			uint8_t vcc_pin = MYNODE_PIN_NONE,
-			MyNodeTime wait = 0);
+			MyNodeTime sleep = 300000,
+			MyNodeTime wait = 50 );
 
 	virtual void before(void);
 
@@ -23,7 +25,7 @@ protected:
 
 	virtual void runAction(MyNodeAction action);
 	void actionPollPrepare(void);
-	virtual void actionPollRun(void) = 0;
+	virtual void actionPollRun(void);
 
 	// enable/disable digital out pin to supply voltage to sensor
 	void powerOn( void );
@@ -34,7 +36,7 @@ protected:
 
 private:
 	uint8_t _analog, _vcc;
-	MyNodeTime _wait;
+	MyNodeTime _wait, _sleep;
 };
 
 #endif
