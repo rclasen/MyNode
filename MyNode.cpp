@@ -35,6 +35,7 @@ void MyNodeInit( uint8_t itemc, uint8_t childc )
 	_childc = childc;
 }
 
+#if do_deletes
 void MyNodeEnd()
 {
 	for( uint8_t i = 0; i < _itemn; ++i )
@@ -42,6 +43,7 @@ void MyNodeEnd()
 	delete _itemv;
 	delete _childv;
 }
+#endif
 
 void MyNodeRegisterItem( MyNodeItem *item )
 {

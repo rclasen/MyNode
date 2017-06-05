@@ -14,10 +14,12 @@ MyNodeItem::MyNodeItem( uint8_t childc )
 	nextAction( MYNODE_ACTION_INIT );
 }
 
+#if do_deletes
 MyNodeItem::~MyNodeItem()
 {
 	delete _childv;
 }
+#endif
 
 uint8_t MyNodeItem::getChildCount( void )
 {

@@ -43,7 +43,9 @@ extern MyMessage _nodeMsg;
 class MyNodeItem {
 public:
 	MyNodeItem( uint8_t childc );
+#if do_deletes
 	virtual ~MyNodeItem();
+#endif
 
 	// for MyNode init:
 	uint8_t getChildCount( void );
@@ -58,6 +60,8 @@ public:
 
 	// TODO: runtime config?
 	// TODO: receive data?
+	// TODO: averaging of data?
+	// TODO: only send data when it changed?
 
 protected:
 	void MyNodeItem::setChild(uint8_t child, uint8_t id, mysensor_sensor sensor );
@@ -83,12 +87,12 @@ protected:
 				vtype, ack);
 	};
 
-	MyNodeAction _nextAction;
-	MyNodeTime _nextTime;
-
 private:
 	uint8_t _childc;	// child count
 	MyNodeItemChild *_childv;	// child IDs
+
+	MyNodeAction _nextAction;
+	MyNodeTime _nextTime;
 };
 
 #endif

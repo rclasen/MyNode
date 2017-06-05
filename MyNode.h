@@ -13,7 +13,9 @@
 // This core layer just does scheduling / dispatching to items
 
 void MyNodeInit( uint8_t itemc = 3, uint8_t childc = 5 );
+#if do_deletes
 void MyNodeEnd( void );
+#endif
 
 void MyNodeRegisterItem( MyNodeItem *item );
 
