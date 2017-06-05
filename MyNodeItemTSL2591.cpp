@@ -8,6 +8,7 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
 	setChildId( 0, lux );
 	setChildId( 1, visible );
 	setChildId( 2, ir );
+	_nextAction = MYNODE_ACTION_POLLRUN; // TODO: actionPollPrepare
 };
 
 mysensor_sensor MyNodeItemTSL2591::getChildSensor(uint8_t child)
@@ -31,12 +32,19 @@ bool MyNodeItemTSL2591::before(void)
 	_sensor.setTiming(TSL2591_INTEGRATIONTIME_200MS);
 };
 
+bool MyNodeItemTSL2591::actionPollPrepare(void)
+{
+	// TODO: actionPollPrepare
+	return true;
+}
+
 bool MyNodeItemTSL2591::actionPollRun(void)
 {
 #if MYNODE_DEBUG
 	Serial.println(F("MNI TSL2591 actionPollRun"));
 #endif
 	_nextTime = MyNodeNext(_sleep);
+	_nextAction = MYNODE_ACTION_POLLRUN; // TODO: actionPollPrepare
 
 	uint32_t raw = _sensor.getFullLuminosity();
 	if( raw == UINT32_MAX ){

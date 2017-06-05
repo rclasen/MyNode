@@ -22,6 +22,8 @@ typedef enum {
 	MYNODE_ACTION_LAST,
 } MyNodeAction;
 
+#define MYNODE_PIN_NONE UINT8_MAX
+
 // interfacing with actual sensor/actor (=item)
 // init, poll, ...
 // get/set values
@@ -52,7 +54,9 @@ public:
 	virtual bool actionPollPrepare(void);
 	virtual bool actionPollRun(void);
 
-	// TODO& more
+	// TODO: more actions?
+	// TODO: runtime config?
+	// TODO: receive data?
 
 protected:
 	MyMessage& _msg_set( const uint8_t child,

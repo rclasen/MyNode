@@ -12,9 +12,12 @@ public:
 	MyNodeItemTSL2591( uint8_t lux, uint8_t visible, uint8_t ir,
 			MyNodeTime sleep );
 
+	// TODO: compile time options to set gain and integration time
+
 	virtual mysensor_sensor getChildSensor(uint8_t child);
 	virtual mysensor_data getChildType(uint8_t child);
 	virtual bool before(void);
+	virtual bool actionPollPrepare(void);
 	virtual bool actionPollRun(void);
 
 private:

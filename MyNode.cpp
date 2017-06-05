@@ -141,7 +141,7 @@ void MyNode::setup()
 #if MYNODE_DEBUG
 	Serial.println(F("MN setup"));
 #endif
-	// TODO
+	// TODO: setup()
 }
 
 void MyNode::loop()
@@ -198,15 +198,18 @@ void MyNode::loop()
 		return;
 
 	int8_t ret = sleep( sleep_needed );
-#if MYNODE_DEBUG
-	Serial.print(F("MN loop sleep return="));
-	Serial.println(ret);
-#endif
 	if( ret == MY_WAKE_UP_BY_TIMER ){
+#if MYNODE_DEBUG
+		Serial.println(F("MN loop sleep completed"));
+#endif
 		MyNodeDelta( sleep_needed );
 	} else {
-		// TODO: guess duration
-		// TODO: handle interrupt
+#if MYNODE_DEBUG
+		Serial.print(F("MN loop sleep cancelled by int="));
+		Serial.println(ret);
+#endif
+		// TODO: guess actual sleep duration
+		// TODO: handle received interrupts
 	}
 }
 
@@ -215,7 +218,7 @@ void MyNode::receive(const MyMessage & msg)
 #if MYNODE_DEBUG
 	Serial.println(F("MN receive"));
 #endif
-	// TODO
+	// TODO: receive()
 }
 
 void MyNode::receiveTime(unsigned long ts)
@@ -223,7 +226,7 @@ void MyNode::receiveTime(unsigned long ts)
 #if MYNODE_DEBUG
 	Serial.println(F("MN receiveTime"));
 #endif
-	// TODO
+	// TODO: receiveTime()
 }
 
 uint8_t MyNode::getItemCount( void )
