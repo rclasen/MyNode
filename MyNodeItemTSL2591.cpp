@@ -16,15 +16,16 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
 
 void MyNodeItemTSL2591::before(void)
 {
-	nextAction( MYNODE_ACTION_POLLRUN ); // TODO: actionPollPrepare
+	nextAction( MYNODE_ACTION_POLLPREPARE );
 
-	_sensor.begin();
+	_sensor.begin(); // TODO: handle error, re-init?
 	_sensor.setGain(TSL2591_GAIN_LOW);
 	//_sensor.setGain(TSL2591_GAIN_HIGH);
 	//_sensor.setTiming(TSL2591_INTEGRATIONTIME_100MS);
 	//... 200, 300, 400, 500, ...
 	//_sensor.setTiming(TSL2591_INTEGRATIONTIME_600MS);
 	_sensor.setTiming(TSL2591_INTEGRATIONTIME_200MS);
+	_sensor.disable();
 };
 
 void MyNodeItemTSL2591::runAction( MyNodeAction action )
@@ -48,15 +49,18 @@ void MyNodeItemTSL2591::runAction( MyNodeAction action )
 
 void MyNodeItemTSL2591::actionPollPrepare(void)
 {
-	nextAction( MYNODE_ACTION_POLLRUN ); // TODO: actionPollPrepare
+	_sensor.enable();
+	nextAction( MYNODE_ACTION_POLLRUN, _sensor.getTime() );
 }
 
 void MyNodeItemTSL2591::actionPollRun(void)
 {
-	nextAction( MYNODE_ACTION_POLLRUN, _sleep ); // TODO: actionPollPrepare
+	nextAction( MYNODE_ACTION_POLLPREPARE, _sleep );
 	MyNodeTime now = MyNodeNow();
 
 	uint32_t raw = _sensor.getFullLuminosity();
+	_sensor.disable();
+
 	if( raw == UINT32_MAX ){
 		Serial.println(F("!TSL2591 get"));
 		return;
@@ -65,7 +69,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	uint16_t full = raw & 0xFFFF;
 	uint16_t ir = raw >> 16;
 	uint16_t visible = full - ir;
-	uint32_t lux = _sensor.calculateLux( full, ir );
+	float lux = _sensor.calculateLux( full, ir );
 
 #if MYNODE_DEBUG
 	Serial.println(F("TSL2591"));
@@ -88,7 +92,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	Serial.println(F("TSL2591 send"));
 	nextSend = now + 5 * _sleep;
 
-	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc()));
+	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(),3));
 	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc()));
 	send(_msg_set(2, V_LIGHT_LEVEL).set(air.calc()));
 

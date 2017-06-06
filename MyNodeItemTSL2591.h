@@ -23,10 +23,10 @@ protected:
 	void actionPollRun(void);
 
 private:
-	Adafruit_TSL2591 _sensor;
+	Sensor_TSL2591 _sensor;
 	MyNodeTime _sleep, nextSend;
 	MyAvg<uint16_t> avis, air;
-	MyAvg<uint32_t> alux;
+	MyAvg<float> alux;
 };
 
 #endif
