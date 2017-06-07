@@ -30,4 +30,8 @@ void MyNodeLoop();
 void MyNodeReceive(const MyMessage & msg);
 void MyNodeReceiveTime(unsigned long ts);
 
+// MyNodeItems may request extra features
+// linker only adds this code, if it's used
+void MyNodeEnableAdc( void );
+
 #endif

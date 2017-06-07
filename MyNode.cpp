@@ -1,4 +1,5 @@
 #include "MyNode.h"
+#include "MyNodeAdc.h"
 
 #define MYNODE_ITEM_NONE 255
 
@@ -173,5 +174,21 @@ void MyNodeReceiveTime(unsigned long ts)
 	Serial.println(F("MN receiveTime"));
 #endif
 	// TODO: receiveTime()
+}
+
+/************************************************************
+ * MyNodeAdc - optional
+ */
+
+bool adc_init = false;
+
+void MyNodeEnableAdc( void )
+{
+	if( adc_init )
+		return;
+
+	// TODO: get Adc Intref calibration data from EEPROM
+	MyNodeAdcIntrefSet( 1100 );
+	adc_init = true;
 }
 

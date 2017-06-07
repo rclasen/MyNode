@@ -1,6 +1,5 @@
 #include "MyNodeItemVolt.h"
-
-#define ADC_MAX 1023
+#include "MyNodeAdc.h"
 
 MyNodeItemVolt::MyNodeItemVolt( uint8_t child,
 		uint8_t analog_pin, uint8_t vcc_pin,
@@ -15,6 +14,8 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t child,
 
 void MyNodeItemVolt::before( void )
 {
+	MyNodeEnableAdc();
+
 	if( _vcc != MYNODE_PIN_NONE ){
 		pinMode( _vcc, OUTPUT );
 		powerOff();
@@ -57,7 +58,7 @@ void MyNodeItemVolt::actionPollRun( void )
 {
 	nextActionPoll( _sleep );
 
-	uint16_t mvolt = getMVolt();
+	uint16_t mvolt = MyNodeAdcRead( _analog );
 	powerOff();
 
 	float volt = .001 * mvolt;
@@ -82,14 +83,3 @@ void MyNodeItemVolt::powerOff( void )
 	if( _vcc != MYNODE_PIN_NONE )
 		digitalWrite( _vcc, LOW );
 }
-
-uint16_t MyNodeItemVolt::getMVolt( void )
-{
-	long vcc = MyNodeVcc();
-
-	analogReference(DEFAULT);
-	uint16_t raw = analogRead(_analog);
-
-	return vcc * raw / ADC_MAX;
-}
-

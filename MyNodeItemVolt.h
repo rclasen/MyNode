@@ -2,7 +2,6 @@
 #define MyNodeItemVolt_h
 
 #include "MyNodeItem.h"
-#include "MyNodeVcc.h"
 
 class MyNodeItemVolt : public MyNodeItem {
 public:
@@ -30,9 +29,6 @@ protected:
 	// enable/disable digital out pin to supply voltage to sensor
 	void powerOn( void );
 	void powerOff( void );
-
-	// get Millivolts
-	uint16_t getMVolt( void );
 
 private:
 	uint8_t _analog, _vcc;

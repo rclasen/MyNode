@@ -2,7 +2,6 @@
 #define MyNodeItemBatteryVcc_h
 
 #include "MyNodeItem.h"
-#include "MyNodeVcc.h"
 
 class MyNodeItemBatteryVcc : public MyNodeItem {
 public:
