@@ -25,7 +25,7 @@ void MyNodeRegisterItem( MyNodeItem *item );
 // hooks to run from mysensors:
 // need to be called manually in your .ino
 void MyNodeBefore();
-void MyNodePresentation( PGM_P name, PGM_P version );
+void MyNodePresentation( const __FlashStringHelper *name, const __FlashStringHelper *version );
 void MyNodeLoop();
 void MyNodeReceive(const MyMessage & msg);
 void MyNodeReceiveTime(unsigned long ts);

@@ -76,19 +76,9 @@ void MyNodeBefore()
 		_itemv[i]->before();
 }
 
-void MyNodePresentation( PGM_P name, PGM_P version )
+void MyNodePresentation( const __FlashStringHelper *name, const __FlashStringHelper *version )
 {
-	{
-		char buf[MAX_PAYLOAD];
-
-		strncpy_P(buf, name, MAX_PAYLOAD );
-		buf[MAX_PAYLOAD-1] = 0;
-		sendSketchInfo( buf, NULL );
-
-		strncpy_P(buf, version, MAX_PAYLOAD );
-		buf[MAX_PAYLOAD-1] = 0;
-		sendSketchInfo( NULL, buf );
-	}
+	sendSketchInfo( name, version );
 
 	for( uint8_t i = 0; i < _itemn; ++i )
 		_itemv[i]->presentation();
