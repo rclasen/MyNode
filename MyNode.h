@@ -17,11 +17,14 @@
  * MyNodeItem
  *
  ************************************************************/
+
+#define MYNODE_SENSORNUM_NONE 255
+
 enum {
-	MYNODE_CHILD_CONFIG = 0,
-	MYNODE_CHILD_BATTERY,
-	MYNODE_CHILD_LAST,
-	MYNODE_CHILD_NONE = 255,
+	MYNODE_SENSORID_CONFIG = 0,
+	MYNODE_SENSORID_BATTERY,
+	MYNODE_SENSORID_LAST,
+	MYNODE_SENSORID_NONE = 255,
 };
 
 typedef enum {
@@ -36,13 +39,13 @@ typedef enum {
 
 // TODO: consider define for static clientv allocation
 
-class MyNodeItemChild {
+class MyNodeItemSensor {
 public:
-	MyNodeItemChild( uint8_t _id = MYNODE_CHILD_NONE, mysensor_sensor
-			_sensor = S_CUSTOM ) : id(_id), sensor(_sensor) {};
+	MyNodeItemSensor( uint8_t _id = MYNODE_SENSORID_NONE, mysensor_sensor
+			_type = S_CUSTOM ) : id(_id), type(_type) {};
 
 	uint8_t id;
-	uint8_t sensor;
+	uint8_t type;
 };
 
 extern MyMessage _nodeMsg;
@@ -53,16 +56,16 @@ extern MyMessage _nodeMsg;
 // power on/off as needed
 class MyNodeItem {
 public:
-	MyNodeItem( uint8_t childc );
+	MyNodeItem( uint8_t sensorc );
 #if do_deletes
 	virtual ~MyNodeItem();
 #endif
 
 	// for MyNode init:
-	uint8_t getChildCount( void );
-	uint8_t getChildId(uint8_t child);
-	uint8_t getChildById(uint8_t id);
-	bool haveChildId(uint8_t id);
+	uint8_t getSensorCount( void );
+	uint8_t getSensorId(uint8_t snum);
+	uint8_t getSensorById(uint8_t id);
+	bool haveSensorId(uint8_t id);
 
 	// dispatched by MyNode:
 	virtual void before(void);
@@ -76,7 +79,7 @@ public:
 	// TODO: only send data when it changed?
 
 protected:
-	void MyNodeItem::setChild(uint8_t child, uint8_t id, mysensor_sensor sensor );
+	void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type );
 
 	virtual void runAction( MyNodeAction action );
 
@@ -89,19 +92,19 @@ protected:
 		nextAt( action, MyNodeNext( delay ));
 	};
 
-	inline MyMessage& _msg_set( const uint8_t child,
+	inline MyMessage& _msg_set( const uint8_t snum,
 			const mysensor_data vtype,
 			const uint8_t destination = 0,
 			const mysensor_command cmd = C_SET,
 			const bool ack = false)
 	{
-		return build( _nodeMsg, destination, getChildId(child), cmd,
+		return build( _nodeMsg, destination, getSensorId(snum), cmd,
 				vtype, ack);
 	};
 
 private:
-	uint8_t _childc;	// child count
-	MyNodeItemChild *_childv;	// child IDs
+	uint8_t _sensorc;	// sensor count
+	MyNodeItemSensor *_sensorv;	// sensor IDs
 
 	MyNodeAction _nextAction;
 	MyNodeTime _nextTime;

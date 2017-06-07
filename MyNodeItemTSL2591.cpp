@@ -1,16 +1,16 @@
 #include "MyNodeItemTSL2591.h"
 
-MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t lux, uint8_t visible,
-		uint8_t ir, MyNodeTime sleep  ) :
+MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis,
+		uint8_t id_ir, MyNodeTime interval  ) :
 	MyNodeItem( 3 ),
 	alux( 5 ),
 	avis( 5 ),
 	air( 5 )
 {
-	_sleep = sleep;
-	setChild( 0, lux, S_LIGHT_LEVEL );
-	setChild( 1, visible, S_LIGHT_LEVEL );
-	setChild( 2, ir, S_LIGHT_LEVEL );
+	_interval = interval;
+	setSensor( 0, id_lux, S_LIGHT_LEVEL );
+	setSensor( 1, id_vis, S_LIGHT_LEVEL );
+	setSensor( 2, id_ir, S_LIGHT_LEVEL );
 	nextSend = MyNodeNow();
 };
 
@@ -55,7 +55,7 @@ void MyNodeItemTSL2591::actionPollPrepare(void)
 
 void MyNodeItemTSL2591::actionPollRun(void)
 {
-	nextAction( MYNODE_ACTION_POLLPREPARE, _sleep );
+	nextAction( MYNODE_ACTION_POLLPREPARE, _interval );
 	MyNodeTime now = MyNodeNow();
 
 	uint32_t raw = _sensor.getFullLuminosity();
@@ -90,7 +90,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 		return;
 
 	Serial.println(F("TSL2591 send"));
-	nextSend = now + 5 * _sleep;
+	nextSend = now + 5 * _interval;
 
 	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(),3));
 	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc()));

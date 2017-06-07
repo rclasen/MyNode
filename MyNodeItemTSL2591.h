@@ -10,8 +10,8 @@
 
 class MyNodeItemTSL2591 : public MyNodeItem {
 public:
-	MyNodeItemTSL2591( uint8_t lux, uint8_t visible, uint8_t ir,
-			MyNodeTime sleep );
+	MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id_ir,
+			MyNodeTime interval );
 
 	// TODO: compile time options to set gain and integration time
 
@@ -24,7 +24,7 @@ protected:
 
 private:
 	Sensor_TSL2591 _sensor;
-	MyNodeTime _sleep, nextSend;
+	MyNodeTime _interval, nextSend;
 	MyAvg<uint16_t> avis, air;
 	MyAvg<float> alux;
 };

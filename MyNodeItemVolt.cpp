@@ -1,15 +1,15 @@
 #include "MyNodeItemVolt.h"
 #include "MyNodeAdc.h"
 
-MyNodeItemVolt::MyNodeItemVolt( uint8_t child,
+MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 		uint8_t analog_pin, uint8_t vcc_pin,
-		MyNodeTime sleep, MyNodeTime wait ) : MyNodeItem( 1 )
+		MyNodeTime interval, MyNodeTime wait ) : MyNodeItem( 1 )
 {
 	_analog = analog_pin;
 	_vcc = vcc_pin;
 	_wait = wait;
-	_sleep = sleep;
-	setChild(0, child, S_MULTIMETER );
+	_interval = interval;
+	setSensor(0, id, S_MULTIMETER );
 };
 
 void MyNodeItemVolt::before( void )
@@ -56,7 +56,7 @@ void MyNodeItemVolt::actionPollPrepare( void )
 
 void MyNodeItemVolt::actionPollRun( void )
 {
-	nextActionPoll( _sleep );
+	nextActionPoll( _interval );
 
 	uint16_t mvolt = MyNodeAdcRead( _analog );
 	powerOff();

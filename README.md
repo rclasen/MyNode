@@ -5,17 +5,18 @@ MyNode is a library for MySensors nodes.
 To recap MySensors terms:
 
 * a **node** is an actual device on the MySensors netowrk.
-* each node can have up to 255 **sensors**
+* each node can have several **sensors**
+* each sensor has a **sensor id** 0..255 within the node
 * there are predefined **sensor types** (S_something defines)
 * each sensor can send/receive different **value types** (V_something defines)
 * MySensors mostly tries to hide what kind of **datat type** you're using for values (integer, float, string)...
-* in addition to sensors, a node also offers **internal** commands - eg. to report battery level
+* in addition to sensors, a node also handles **internal** commands - eg. to report battery level
 
 In this lib, a MyNodeItem may implement the functionality of one or
 several sensors... to allow a single external data poll to feed them
 all.
 
-MyNodeItems can also be used to implement special" tasks like handling
+MyNodeItems can also be used to implement "special" tasks like handling
 some of the internal commands (provide battery level) or offering means
 for runtime configuration of the node.
 

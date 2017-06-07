@@ -5,10 +5,10 @@
 
 class MyNodeItemVolt : public MyNodeItem {
 public:
-	MyNodeItemVolt( uint8_t child,
+	MyNodeItemVolt( uint8_t id,
 			uint8_t analog_pin,
 			uint8_t vcc_pin = MYNODE_PIN_NONE,
-			MyNodeTime sleep = 300000,
+			MyNodeTime interval = 300000,
 			MyNodeTime wait = 50 );
 
 	virtual void before(void);
@@ -32,7 +32,7 @@ protected:
 
 private:
 	uint8_t _analog, _vcc;
-	MyNodeTime _wait, _sleep;
+	MyNodeTime _wait, _interval;
 };
 
 #endif

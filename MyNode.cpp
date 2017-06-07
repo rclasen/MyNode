@@ -54,14 +54,14 @@ void MyNodeRegisterItem( MyNodeItem *item )
 
 	_itemv[_itemn] = item;
 
-	uint8_t num = item->getChildCount();
+	uint8_t cnt = item->getSensorCount();
 #if MYNODE_DEBUG
 	Serial.print(F("MN REG i="));
 	Serial.print(_itemn);
 	Serial.print(F(" item="));
 	Serial.print((unsigned int)item);
-	Serial.print(F(" num="));
-	Serial.println(num);
+	Serial.print(F(" cnt="));
+	Serial.println(cnt);
 #endif
 	++_itemn;
 }

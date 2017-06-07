@@ -3,12 +3,12 @@
 
 MyNodeItemBatteryVcc::MyNodeItemBatteryVcc(
 		uint16_t min, uint16_t max,
-		MyNodeTime sleep ) : MyNodeItem( 1 )
+		MyNodeTime interval ) : MyNodeItem( 1 )
 {
 	_min = min;
 	_max = max;
-	_sleep = sleep;
-	setChild(0, MYNODE_CHILD_BATTERY, S_MULTIMETER );
+	_interval = interval;
+	setSensor(0, MYNODE_SENSORID_BATTERY, S_MULTIMETER );
 };
 
 
@@ -34,7 +34,7 @@ void MyNodeItemBatteryVcc::runAction( MyNodeAction action )
 
 void MyNodeItemBatteryVcc::actionPollRun( void )
 {
-	nextAction( MYNODE_ACTION_POLLRUN, _sleep );
+	nextAction( MYNODE_ACTION_POLLRUN, _interval );
 
 	uint16_t mvolt = MyNodeAdcVcc();
 

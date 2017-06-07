@@ -8,11 +8,11 @@ MyMessage _nodeMsg;
  * MyNodeItem
  */
 
-MyNodeItem::MyNodeItem( uint8_t childc )
+MyNodeItem::MyNodeItem( uint8_t sensorc )
 {
-	_childc = childc;
-	_childv = new MyNodeItemChild[childc]();
-	if( ! _childv ){
+	_sensorc = sensorc;
+	_sensorv = new MyNodeItemSensor[sensorc]();
+	if( ! _sensorv ){
 		MyNodePanic();
 		return;
 	}
@@ -22,52 +22,52 @@ MyNodeItem::MyNodeItem( uint8_t childc )
 #if do_deletes
 MyNodeItem::~MyNodeItem()
 {
-	delete _childv;
+	delete _sensorv;
 }
 #endif
 
-uint8_t MyNodeItem::getChildCount( void )
+uint8_t MyNodeItem::getSensorCount( void )
 {
-	return _childc;
+	return _sensorc;
 }
 
-void MyNodeItem::setChild(uint8_t child, uint8_t id, mysensor_sensor sensor )
+void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type )
 {
-	if( child >= _childc ){
-		Serial.println(F("!MNI childc"));
+	if( snum >= _sensorc ){
+		Serial.println(F("!MNI sensorc"));
 		return;
 	}
 
-	_childv[child].id = id;
-	_childv[child].sensor = sensor;
+	_sensorv[snum].id = id;
+	_sensorv[snum].type = type;
 }
 
-uint8_t MyNodeItem::getChildId(uint8_t child)
+uint8_t MyNodeItem::getSensorId(uint8_t snum)
 {
-	if( child >= _childc ){
-		Serial.println(F("!MNI childc"));
+	if( snum >= _sensorc ){
+		Serial.println(F("!MNI sensorc"));
 		return 0;
 	}
 
-	return _childv[child].id;
+	return _sensorv[snum].id;
 }
 
-uint8_t MyNodeItem::getChildById(uint8_t id)
+uint8_t MyNodeItem::getSensorById(uint8_t id)
 {
-	for( uint8_t c = 0; c < _childc; ++c ){
-		if( _childv[c].id == MYNODE_CHILD_NONE )
+	for( uint8_t c = 0; c < _sensorc; ++c ){
+		if( _sensorv[c].id == MYNODE_SENSORID_NONE )
 			continue;
 
-		if( _childv[c].id == id )
+		if( _sensorv[c].id == id )
 			return c;
 	}
 
-	return MYNODE_CHILD_NONE;
+	return MYNODE_SENSORNUM_NONE;
 }
 
-bool MyNodeItem::haveChildId(uint8_t id)
+bool MyNodeItem::haveSensorId(uint8_t id)
 {
-	return getChildById( id ) != MYNODE_CHILD_NONE;
+	return getSensorById( id ) != MYNODE_SENSORNUM_NONE;
 }
 
 void MyNodeItem::before( void )
@@ -77,11 +77,11 @@ void MyNodeItem::before( void )
 
 void MyNodeItem::presentation( void )
 {
-	for( uint8_t c = 0; c < _childc; ++c ){
-		if( _childv[c].id == MYNODE_CHILD_NONE )
+	for( uint8_t c = 0; c < _sensorc; ++c ){
+		if( _sensorv[c].id == MYNODE_SENSORID_NONE )
 			continue;
 
-		present( _childv[c].id, _childv[c].sensor );
+		present( _sensorv[c].id, _sensorv[c].type );
 		// TODO: handle failed present()
 	}
 }
