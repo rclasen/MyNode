@@ -1,7 +1,7 @@
 #ifndef MyNodeItemBatteryVcc_h
 #define MyNodeItemBatteryVcc_h
 
-#include "MyNodeItem.h"
+#include "MyNode.h"
 
 class MyNodeItemBatteryVcc : public MyNodeItem {
 public:

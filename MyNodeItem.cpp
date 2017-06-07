@@ -1,4 +1,4 @@
-#include "MyNodeItem.h"
+#include "MyNode.h"
 #include "MyNodePanic.h";
 
 MyMessage _nodeMsg;
@@ -82,7 +82,7 @@ void MyNodeItem::presentation( void )
 			continue;
 
 		present( _childv[c].id, _childv[c].sensor );
-		// TODO: report present issues
+		// TODO: handle failed present()
 	}
 }
 

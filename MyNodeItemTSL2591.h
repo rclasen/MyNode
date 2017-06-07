@@ -5,7 +5,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_TSL2591.h>
 
-#include "MyNodeItem.h"
+#include "MyNode.h"
 #include "MyAvg.h"
 
 class MyNodeItemTSL2591 : public MyNodeItem {

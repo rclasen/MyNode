@@ -27,6 +27,9 @@ T MyAvgCalc( T *list, const uint8_t size, const uint8_t have, const uint8_t next
 	for( uint8_t i = have; i > 0; --i ){
 		uint8_t x = (size + next - i) % size;
 
+		// TODO: may overflow T... but can't divide by
+		// _have, now as this messes up averaging of
+		// small integers
 		sum += list[x];
 	}
 
@@ -35,7 +38,7 @@ T MyAvgCalc( T *list, const uint8_t size, const uint8_t have, const uint8_t next
 
 // and as class:
 
-// TODO: use define for static list allocation
+// TODO: consider define for static list allocation
 
 template <class T>
 class MyAvg {
@@ -79,6 +82,9 @@ public:
 		for( uint8_t i = _have; i > 0; --i ){
 			uint8_t x = (_size + _next - i) % _size;
 
+			// TODO: may overflow T... but can't divide by
+			// _have, now as this messes up averaging of
+			// small integers
 			sum += _list[x];
 		}
 

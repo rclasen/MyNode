@@ -1,7 +1,7 @@
 #ifndef MyNodeItemVolt_h
 #define MyNodeItemVolt_h
 
-#include "MyNodeItem.h"
+#include "MyNode.h"
 
 class MyNodeItemVolt : public MyNodeItem {
 public:
