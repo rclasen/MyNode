@@ -8,10 +8,11 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis,
 	air( 5 )
 {
 	_interval = interval;
+	_polls = 3;
+	_run = 0;
 	setSensor( 0, id_lux, S_LIGHT_LEVEL );
 	setSensor( 1, id_vis, S_LIGHT_LEVEL );
 	setSensor( 2, id_ir, S_LIGHT_LEVEL );
-	nextSend = MyNodeNow();
 };
 
 void MyNodeItemTSL2591::before(void)
@@ -55,7 +56,8 @@ void MyNodeItemTSL2591::actionPollPrepare(void)
 
 void MyNodeItemTSL2591::actionPollRun(void)
 {
-	nextAction( MYNODE_ACTION_POLLPREPARE, _interval );
+	++_run;
+	nextAction( MYNODE_ACTION_POLLPREPARE, _interval / _polls );
 	MyNodeTime now = MyNodeNow();
 
 	uint32_t raw = _sensor.getFullLuminosity();
@@ -86,11 +88,11 @@ void MyNodeItemTSL2591::actionPollRun(void)
 		Serial.println(F("!TSL2591 lux"));
 	}
 
-	if( nextSend - now < MYNODE_TIME_MAXDUR )
+	if( _run < _polls )
 		return;
 
 	Serial.println(F("TSL2591 send"));
-	nextSend = now + 5 * _interval;
+	_run = 0;
 
 	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(),3));
 	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc()));

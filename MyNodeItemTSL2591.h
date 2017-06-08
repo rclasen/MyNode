@@ -24,7 +24,8 @@ protected:
 
 private:
 	Sensor_TSL2591 _sensor;
-	MyNodeTime _interval, nextSend;
+	MyNodeTime _interval;
+	uint8_t _run, _polls;
 	MyAvg<uint16_t> avis, air;
 	MyAvg<float> alux;
 };

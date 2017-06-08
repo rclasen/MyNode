@@ -23,10 +23,13 @@
 // load MyNode library
 #include <MyNode.h>
 
+// when powered directly from battery
 #define WANT_BATTERY
 #ifdef WANT_BATTERY
 #include <MyNodeItemBatteryVcc.h>
 #endif
+
+// TODO: external battery status - when using a voltage regulator
 
 #define WANT_VOLT
 #ifdef WANT_VOLT
@@ -44,7 +47,7 @@
 #endif
 
 /***********************************
- * node setup
+ * node config
  */
 
 const char SKETCH_NAME[] PROGMEM = "mynode";
@@ -63,7 +66,7 @@ enum {
 };
 
 #ifdef WANT_TSL2591
-#define TSL_INTERVAL (30L * 1000)
+#define TSL_INTERVAL (150L * 1000)
 #endif
 
 #ifdef WANT_VOLT
@@ -79,7 +82,7 @@ enum {
 #endif
 
 /***********************************
- * no changes below this line
+ * no config changes below this line
  */
 
 
@@ -123,6 +126,10 @@ void before() {
 
 	MyNodeBefore();
 }
+
+/***********************************
+ * no changes below this line
+ */
 
 // presentation
 void presentation() {
