@@ -3,6 +3,9 @@
 
 #include "MyNode.h"
 
+// provide battery status if your node is directly powered from the
+// battery withoug step-up/down regulator
+
 class MyNodeItemBatteryVcc : public MyNodeItem {
 public:
 	MyNodeItemBatteryVcc( uint16_t min = 2600, uint16_t max = 3400,

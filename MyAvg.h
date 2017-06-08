@@ -73,6 +73,7 @@ public:
 			++_have;
 	};
 
+	// TODO: allow averaging only the last few samples
 	T calc( void )
 	{
 		if( ! _have )

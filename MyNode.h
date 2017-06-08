@@ -16,17 +16,32 @@
  *
  * MyNodeItem
  *
- ************************************************************/
+ ************************************************************
 
-#define MYNODE_SENSORNUM_NONE 255
+ * interfacing with actual sensor/actor (=item)
+ * init, poll, ...
+ * get/set values
+ * power on/off as needed
 
+ * even though virtual methods + inheritance come with a memory penalty
+ * for vtables, it's still the way to go. Custom pointer magic to
+ * replicate the same functionality is a pain and way less powerful
+
+ * TODO: consider define for static sensorv allocation
+ */
+
+#define MYNODE_SENSORNUM_NONE UINT8_MAX
+#define MYNODE_PIN_NONE UINT8_MAX
+
+// some internal / common sensor IDs
 enum {
 	MYNODE_SENSORID_CONFIG = 0,
 	MYNODE_SENSORID_BATTERY,
 	MYNODE_SENSORID_LAST,
-	MYNODE_SENSORID_NONE = 255,
+	MYNODE_SENSORID_NONE = UINT8_MAX,
 };
 
+// some internal / common Actions for runAction statemachine
 typedef enum {
 	MYNODE_ACTION_INIT,
 	MYNODE_ACTION_POLLPREPARE,
@@ -34,10 +49,6 @@ typedef enum {
 	MYNODE_ACTION_NONE,
 	MYNODE_ACTION_LAST,
 } MyNodeAction;
-
-#define MYNODE_PIN_NONE UINT8_MAX
-
-// TODO: consider define for static clientv allocation
 
 class MyNodeItemSensor {
 public:
@@ -50,10 +61,6 @@ public:
 
 extern MyMessage _nodeMsg;
 
-// interfacing with actual sensor/actor (=item)
-// init, poll, ...
-// get/set values
-// power on/off as needed
 class MyNodeItem {
 public:
 	MyNodeItem( uint8_t sensorc );
@@ -61,18 +68,20 @@ public:
 	virtual ~MyNodeItem();
 #endif
 
-	// for MyNode init:
+	// sensor list management:
 	uint8_t getSensorCount( void );
 	uint8_t getSensorId(uint8_t snum);
 	uint8_t getSensorById(uint8_t id);
 	bool haveSensorId(uint8_t id);
 
-	// dispatched by MyNode:
+	// inteface for MyNode:
 	virtual void before(void);
 	void presentation(void);
 	void schedule( void );
 
 	MyNodeTime getNextTime( void );
+
+	// TODO: move (optional) send interval to base class
 
 	// TODO: runtime config?
 	// TODO: receive data?
@@ -81,10 +90,12 @@ public:
 protected:
 	void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type );
 
+	// statemachine of this item:
 	virtual void runAction( MyNodeAction action );
 
 	MyNodeAction getNextAction( void );
 
+	// scheduling helper:
 	void nextAt( MyNodeAction action, MyNodeTime time );
 
 	inline void nextAction( MyNodeAction action, MyNodeTime delay = 0 )
@@ -92,6 +103,7 @@ protected:
 		nextAt( action, MyNodeNext( delay ));
 	};
 
+	// message helper:
 	inline MyMessage& _msg_set( const uint8_t snum,
 			const mysensor_data vtype,
 			const uint8_t destination = 0,
@@ -114,9 +126,8 @@ private:
  *
  * MyNode
  *
- ************************************************************/
+ ************************************************************
 
-/*
  * no need to waste space by using a class for MyNode
  * as there must be a single node instance only
  * and customization should happen in MyNodeItems

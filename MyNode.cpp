@@ -136,6 +136,9 @@ void MyNodeLoop()
 	if( ! sleep_needed )
 		return;
 
+	// TODO: use multiple sleep()s for large sleep_neede to reduce
+	// impact on time guestimation when an interrupt is received.
+
 	int8_t ret = sleep( sleep_needed );
 	if( ret == MY_WAKE_UP_BY_TIMER ){
 		MyNodeDelta( sleep_needed );
