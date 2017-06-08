@@ -1,19 +1,29 @@
 #include "MyNodeItemTSL2591.h"
 
-MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis,
-		uint8_t id_ir, MyNodeTime interval  ) :
+MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id_ir,
+	uint8_t avg_size ) :
 	MyNodeItem( 3 ),
-	alux( 5 ),
-	avis( 5 ),
-	air( 5 )
+	alux( avg_size ),
+	avis( avg_size ),
+	air( avg_size )
 {
-	_interval = interval;
 	_polls = 3;
 	_run = 0;
 	setSensor( 0, id_lux, S_LIGHT_LEVEL );
 	setSensor( 1, id_vis, S_LIGHT_LEVEL );
 	setSensor( 2, id_ir, S_LIGHT_LEVEL );
+	setSendInterval( 150L * 1000 ); // 2.5min
 };
+
+void MyNodeItemTSL2591::setPolls( uint8_t polls )
+{
+	_polls = polls;
+}
+
+void MyNodeItemTSL2591::setAvg( uint8_t num )
+{
+	_avg = num;
+}
 
 void MyNodeItemTSL2591::before(void)
 {
@@ -102,9 +112,9 @@ void MyNodeItemTSL2591::actionPollRun(void)
 #endif
 	_run = 0;
 
-	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(),3));
-	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc()));
-	send(_msg_set(2, V_LIGHT_LEVEL).set(air.calc()));
+	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(_avg),3));
+	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc(_avg)));
+	send(_msg_set(2, V_LIGHT_LEVEL).set(air.calc(_avg)));
 
 	// TODO: handle failed send
 }

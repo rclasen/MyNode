@@ -32,6 +32,7 @@ void MyNodeInit( uint8_t itemc )
 #if do_deletes
 void MyNodeEnd()
 {
+	// maybe?
 	for( uint8_t i = 0; i < _itemn; ++i )
 		delete _itemv[i];
 	delete _itemv;

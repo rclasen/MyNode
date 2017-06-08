@@ -16,6 +16,7 @@ MyNodeItem::MyNodeItem( uint8_t sensorc )
 		MyNodePanic();
 		return;
 	}
+	_interval = 300L * 1000; // 5 min
 	nextAction( MYNODE_ACTION_INIT );
 }
 
@@ -25,6 +26,11 @@ MyNodeItem::~MyNodeItem()
 	delete _sensorv;
 }
 #endif
+
+void MyNodeItem::setSendInterval( MyNodeTime interval )
+{
+	_interval = interval;
+}
 
 uint8_t MyNodeItem::getSensorCount( void )
 {
@@ -76,7 +82,6 @@ bool MyNodeItem::haveSensorId(uint8_t id)
 
 void MyNodeItem::before( void )
 {
-	nextAction( MYNODE_ACTION_POLLPREPARE );
 }
 
 void MyNodeItem::presentation( void )

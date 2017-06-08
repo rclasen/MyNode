@@ -1,16 +1,24 @@
 #include "MyNodeItemBatteryVcc.h"
 #include "MyNodeAdc.h"
 
-MyNodeItemBatteryVcc::MyNodeItemBatteryVcc(
-		uint16_t min, uint16_t max,
-		MyNodeTime interval ) : MyNodeItem( 1 )
+MyNodeItemBatteryVcc::MyNodeItemBatteryVcc() : MyNodeItem( 1 )
 {
-	_min = min;
-	_max = max;
-	_interval = interval;
+	_min = 2600;
+	_max = 3400;
+	setSendInterval( 24L * 3600 * 1000 ); // 1 day
 	setSensor(0, MYNODE_SENSORID_BATTERY, S_MULTIMETER );
 };
 
+
+void MyNodeItemBatteryVcc::setVoltageMin( uint16_t min )
+{
+	_min = min;
+}
+
+void MyNodeItemBatteryVcc::setVoltageMax( uint16_t max )
+{
+	_max = max;
+}
 
 void MyNodeItemBatteryVcc::before( void )
 {

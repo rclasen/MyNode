@@ -12,6 +12,8 @@
 #define DEBUG
 #ifdef DEBUG
 #define MY_DEBUG
+#else
+#define MY_DISABLED_SERIAL
 #endif
 
 /***********************************
@@ -67,18 +69,31 @@ enum {
 
 #ifdef WANT_TSL2591
 #define TSL_INTERVAL (150L * 1000)
+MyNodeItemTSL2591 tsl(
+	SENSORID_LUX, SENSORID_VISIBLE, SENSORID_IR,
+	5
+);
 #endif
 
 #ifdef WANT_VOLT
 #define VOLT_INTERVAL (150L * 1000)
 #define VOLT_PIN_ANALOG A0
 #define VOLT_PIN_VCC 2
+MyNodeItemVolt volt(
+	SENSORID_VOLT,
+	VOLT_PIN_ANALOG, VOLT_PIN_VCC
+);
+#endif
+
+#ifdef WANT_CONTROL
+MyNodeItemControl control;
 #endif
 
 #ifdef WANT_BATTERY
 #define BAT_INTERVAL (300L * 1000)
 #define BAT_MVOLT_MIN 2600
 #define BAT_MVOLT_MAX 3300
+MyNodeItemBatteryVcc battery;
 #endif
 
 /***********************************
@@ -97,31 +112,27 @@ void before() {
 	MyNodeInit( 4 );
 
 #ifdef WANT_TSL2591
-	MyNodeRegisterItem( new MyNodeItemTSL2591(
-		SENSORID_LUX, SENSORID_VISIBLE, SENSORID_IR,
-		TSL_INTERVAL
-	));
+	tsl.setSendInterval(TSL_INTERVAL);
+	tsl.setPolls(2);
+	tsl.setAvg(3);
+	MyNodeRegisterItem( &tsl );
 #endif
 
 #ifdef WANT_VOLT
-	MyNodeRegisterItem( new MyNodeItemVolt(
-		SENSORID_VOLT,
-		VOLT_PIN_ANALOG, VOLT_PIN_VCC,
-		VOLT_INTERVAL, 30
-	));
+	volt.setSendInterval(VOLT_INTERVAL);
+	MyNodeRegisterItem( &volt );
 #endif
 
 #ifdef WANT_CONTROL
-	MyNodeRegisterItem( new MyNodeItemControl(
-	));
+	MyNodeRegisterItem( &control );
 #endif
 
 #ifdef WANT_BATTERY
 	// battery should be last item:
-	MyNodeRegisterItem( new MyNodeItemBatteryVcc(
-		BAT_MVOLT_MIN, BAT_MVOLT_MAX,
-		BAT_INTERVAL
-	));
+	battery.setSendInterval(BAT_INTERVAL);
+	battery.setVoltageMin(BAT_MVOLT_MIN);
+	battery.setVoltageMax(BAT_MVOLT_MAX);
+	MyNodeRegisterItem( &battery );
 #endif
 
 	MyNodeBefore();

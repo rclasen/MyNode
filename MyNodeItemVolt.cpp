@@ -2,13 +2,12 @@
 #include "MyNodeAdc.h"
 
 MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
-		uint8_t analog_pin, uint8_t vcc_pin,
-		MyNodeTime interval, MyNodeTime wait ) : MyNodeItem( 1 )
+		uint8_t analog_pin, uint8_t vcc_pin
+		) : MyNodeItem( 1 )
 {
 	_analog = analog_pin;
 	_vcc = vcc_pin;
-	_wait = wait;
-	_interval = interval;
+	_wait = 50;
 	setSensor(0, id, S_MULTIMETER );
 };
 

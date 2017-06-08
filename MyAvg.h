@@ -64,6 +64,9 @@ public:
 		delete _list;
 	};
 
+	uint8_t size( void ) { return _size; }
+	uint8_t have( void ) { return _have; }
+
 	void add( T val )
 	{
 		_list[_next] = val;
@@ -73,23 +76,25 @@ public:
 			++_have;
 	};
 
-	// TODO: allow averaging only the last few samples
-	T calc( void )
+	T calc( uint8_t want = UINT8_MAX )
 	{
 		if( ! _have )
 			return 0;
 
+		if( want > _have )
+			want = _have;
+
 		T sum = 0;
-		for( uint8_t i = _have; i > 0; --i ){
+		for( uint8_t i = want; i > 0; --i ){
 			uint8_t x = (_size + _next - i) % _size;
 
 			// TODO: may overflow T... but can't divide by
-			// _have, now as this messes up averaging of
+			// want, now as this messes up averaging of
 			// small integers
 			sum += _list[x];
 		}
 
-		return sum / _have;
+		return sum / want;
 	};
 };
 

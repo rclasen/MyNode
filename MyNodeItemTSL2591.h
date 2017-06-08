@@ -11,9 +11,12 @@
 class MyNodeItemTSL2591 : public MyNodeItem {
 public:
 	MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id_ir,
-			MyNodeTime interval );
+			uint8_t avg_size = 5 );
 
-	// TODO: compile time options to set gain and integration time
+	void setPolls( uint8_t polls ); // polls per sendInterval
+	void setAvg( uint8_t num ); // how many values to use for averaging
+	// TODO: bool setGain();
+	// TODO: bool setDuration();
 
 	virtual void before(void);
 
@@ -24,8 +27,7 @@ protected:
 
 private:
 	Sensor_TSL2591 _sensor;
-	MyNodeTime _interval;
-	uint8_t _run, _polls;
+	uint8_t _run, _polls, _avg;
 	MyAvg<uint16_t> avis, air;
 	MyAvg<float> alux;
 };

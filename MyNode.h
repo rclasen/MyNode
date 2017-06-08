@@ -63,10 +63,17 @@ extern MyMessage _nodeMsg;
 
 class MyNodeItem {
 public:
+	// constructor argument order:
+	// - sendor IDs
+	// - pins (maybe with defaults)
+	// - allocation sizes (with defaults)
+	// other settings should use setSomething methods
 	MyNodeItem( uint8_t sensorc );
 #if do_deletes
 	virtual ~MyNodeItem();
 #endif
+
+	void setSendInterval( MyNodeTime interval );
 
 	// sensor list management:
 	uint8_t getSensorCount( void );
@@ -114,6 +121,7 @@ protected:
 				vtype, ack);
 	};
 
+	MyNodeTime _interval;
 private:
 	uint8_t _sensorc;	// sensor count
 	MyNodeItemSensor *_sensorv;	// sensor IDs
