@@ -44,8 +44,10 @@ void MyNodeItemTSL2591::runAction( MyNodeAction action )
 		;;
 	}
 
+#ifdef MYNODE_ERROR
 	Serial.print(F("!TSL2591 action="));
 	Serial.println(action);
+#endif
 }
 
 void MyNodeItemTSL2591::actionPollPrepare(void)
@@ -64,7 +66,9 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	_sensor.disable();
 
 	if( raw == UINT32_MAX ){
+#ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 get"));
+#endif
 		return;
 	}
 
@@ -85,13 +89,17 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	alux.add( lux );
 
 	if( lux >= TSL2591_LUX_CLIPPED ){
+#ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 lux"));
+#endif
 	}
 
 	if( _run < _polls )
 		return;
 
+#ifdef MYNODE_DEBUG
 	Serial.println(F("TSL2591 send"));
+#endif
 	_run = 0;
 
 	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(),3));

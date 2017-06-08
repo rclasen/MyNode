@@ -41,13 +41,17 @@ void MyNodeEnd()
 void MyNodeRegisterItem( MyNodeItem *item )
 {
 	if( ! item ){
+#ifdef MYNODE_ERROR
 		Serial.println(F("!MN REG: undefined"));
+#endif
 		MyNodePanic();
 		return;
 	}
 
 	if( _itemn >= _itemc ){
+#ifdef MYNODE_ERROR
 		Serial.println(F("!MN REG: itemc"));
+#endif
 		MyNodePanic();
 		return;
 	}

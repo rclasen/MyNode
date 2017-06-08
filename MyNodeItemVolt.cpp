@@ -39,8 +39,10 @@ void MyNodeItemVolt::runAction( MyNodeAction action )
 		;;
 	}
 
+#ifdef MYNODE_ERROR
 	Serial.print(F("!MNI Volt action="));
 	Serial.println(action);
+#endif
 }
 
 void MyNodeItemVolt::actionPollPrepare( void )

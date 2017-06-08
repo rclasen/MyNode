@@ -28,8 +28,10 @@ void MyNodeItemBatteryVcc::runAction( MyNodeAction action )
 		;;
 	}
 
+#ifdef MYNODE_ERROR
 	Serial.print(F("!MNI BatVcc action="));
 	Serial.println(action);
+#endif
 }
 
 void MyNodeItemBatteryVcc::actionPollRun( void )

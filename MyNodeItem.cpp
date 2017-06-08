@@ -34,7 +34,9 @@ uint8_t MyNodeItem::getSensorCount( void )
 void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type )
 {
 	if( snum >= _sensorc ){
+#ifdef MYNODE_ERROR
 		Serial.println(F("!MNI sensorc"));
+#endif
 		return;
 	}
 
@@ -45,7 +47,9 @@ void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type )
 uint8_t MyNodeItem::getSensorId(uint8_t snum)
 {
 	if( snum >= _sensorc ){
+#ifdef MYNODE_ERROR
 		Serial.println(F("!MNI sensorc"));
+#endif
 		return 0;
 	}
 
@@ -120,12 +124,14 @@ void MyNodeItem::schedule( void )
 
 void MyNodeItem::runAction( MyNodeAction action )
 {
+#ifdef MYNODE_ERROR
 	Serial.println(F("!MNI RUN: action"));
+#endif
 }
 
 void MyNodeItem::nextAt( MyNodeAction action, MyNodeTime time )
 {
-#if MYNODE_DEBUG
+#if 0
 	Serial.print(F("MNI NXT item="));
 	Serial.print((unsigned int)this);
 	Serial.print(F(" action="));
