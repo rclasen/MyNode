@@ -11,7 +11,7 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 	setSensor(0, id, S_MULTIMETER );
 };
 
-void MyNodeItemVolt::before( void )
+void MyNodeItemVolt::registered( void )
 {
 	MyNodeEnableAdc();
 

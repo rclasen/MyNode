@@ -18,7 +18,7 @@ public:
 	// TODO: bool setGain();
 	// TODO: bool setDuration();
 
-	virtual void before(void);
+	virtual void registered(void);
 
 protected:
 	virtual void runAction( MyNodeAction action );

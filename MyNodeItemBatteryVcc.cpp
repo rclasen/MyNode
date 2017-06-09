@@ -20,7 +20,7 @@ void MyNodeItemBatteryVcc::setVoltageMax( uint16_t max )
 	_max = max;
 }
 
-void MyNodeItemBatteryVcc::before( void )
+void MyNodeItemBatteryVcc::registered( void )
 {
 	MyNodeEnableAdc();
 

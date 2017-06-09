@@ -80,7 +80,7 @@ bool MyNodeItem::haveSensorId(uint8_t id)
 	return getSensorById( id ) != MYNODE_SENSORNUM_NONE;
 }
 
-void MyNodeItem::before( void )
+void MyNodeItem::registered( void )
 {
 }
 

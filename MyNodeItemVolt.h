@@ -9,7 +9,7 @@ public:
 			uint8_t analog_pin,
 			uint8_t vcc_pin = MYNODE_PIN_NONE );
 
-	virtual void before(void);
+	virtual void registered(void);
 
 protected:
 	inline void nextActionPoll( MyNodeTime delay = 0 )

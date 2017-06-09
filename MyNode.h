@@ -82,7 +82,7 @@ public:
 	bool haveSensorId(uint8_t id);
 
 	// inteface for MyNode:
-	virtual void before(void);
+	virtual void registered(void);
 	void presentation(void);
 	void schedule( void );
 
@@ -172,7 +172,6 @@ void MyNodeRegisterItem( MyNodeItem *item );
 
 // hooks to run from mysensors:
 // need to be called manually in your .ino
-void MyNodeBefore();
 void MyNodePresentation( const __FlashStringHelper *name, const __FlashStringHelper *version );
 void MyNodeLoop();
 void MyNodeReceive(const MyMessage & msg);

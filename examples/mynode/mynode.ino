@@ -134,8 +134,6 @@ void before() {
 	battery.setVoltageMax(BAT_MVOLT_MAX);
 	MyNodeRegisterItem( &battery );
 #endif
-
-	MyNodeBefore();
 }
 
 /***********************************

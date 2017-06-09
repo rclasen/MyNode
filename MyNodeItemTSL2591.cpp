@@ -25,7 +25,7 @@ void MyNodeItemTSL2591::setAvg( uint8_t num )
 	_avg = num;
 }
 
-void MyNodeItemTSL2591::before(void)
+void MyNodeItemTSL2591::registered(void)
 {
 	nextAction( MYNODE_ACTION_POLLPREPARE );
 

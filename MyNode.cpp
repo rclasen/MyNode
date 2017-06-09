@@ -69,16 +69,8 @@ void MyNodeRegisterItem( MyNodeItem *item )
 	Serial.println(cnt);
 #endif
 	++_itemn;
-}
 
-void MyNodeBefore()
-{
-#if MYNODE_DEBUG
-	Serial.print(F("NM free memory: "));
-	Serial.println(hwFreeMem());
-#endif
-	for( uint8_t i = 0; i < _itemn; ++i )
-		_itemv[i]->before();
+	item->registered();
 }
 
 void MyNodePresentation( const __FlashStringHelper *name, const __FlashStringHelper *version )

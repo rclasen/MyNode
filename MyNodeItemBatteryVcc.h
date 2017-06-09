@@ -14,7 +14,7 @@ public:
 	void setVoltageMax( uint16_t max );
 
 protected:
-	virtual void before(void);
+	virtual void registered(void);
 	virtual void runAction(MyNodeAction action);
 	void actionPollRun(void);
 
