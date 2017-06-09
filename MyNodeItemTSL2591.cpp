@@ -25,19 +25,15 @@ void MyNodeItemTSL2591::setAvg( uint8_t num )
 	_avg = num;
 }
 
-void MyNodeItemTSL2591::registered(void)
+void MyNodeItemTSL2591::setGain( tsl2591Gain_t gain )
 {
-	nextAction( MYNODE_ACTION_POLLPREPARE );
+	_sensor.setGain( gain );
+}
 
-	_sensor.begin(); // TODO: handle error, re-init?
-	_sensor.setGain(TSL2591_GAIN_LOW);
-	//_sensor.setGain(TSL2591_GAIN_HIGH);
-	//_sensor.setTiming(TSL2591_INTEGRATIONTIME_100MS);
-	//... 200, 300, 400, 500, ...
-	//_sensor.setTiming(TSL2591_INTEGRATIONTIME_600MS);
-	_sensor.setTiming(TSL2591_INTEGRATIONTIME_200MS);
-	_sensor.disable();
-};
+void MyNodeItemTSL2591::setIntegration( tsl2591IntegrationTime_t integration )
+{
+	_sensor.setIntegration( integration );
+}
 
 void MyNodeItemTSL2591::runAction( MyNodeAction action )
 {
@@ -47,30 +43,52 @@ void MyNodeItemTSL2591::runAction( MyNodeAction action )
 		return;
 		;;
 
-	case MYNODE_ACTION_INIT:
 	case MYNODE_ACTION_POLLPREPARE:
 		actionPollPrepare();;
 		return;
 		;;
+
+	case MYNODE_ACTION_INIT:
+		actionInit();;
+		return;
+		;;
 	}
 
+	send(_msg_set(0, V_CUSTOM).set(F("assert: action")));
 #ifdef MYNODE_ERROR
 	Serial.print(F("!TSL2591 action="));
 	Serial.println(action);
 #endif
 }
 
+void MyNodeItemTSL2591::nextActionReinit(void)
+{
+#ifdef MYNODE_ERROR
+	Serial.println(F("!TSL2591 reinit"));
+#endif
+	nextAction(MYNODE_ACTION_INIT, 30000 );
+	send(_msg_set(0, V_CUSTOM).set(F("reinit")));
+}
+
+void MyNodeItemTSL2591::actionInit(void)
+{
+	if( _sensor.setup() )
+		nextAction(MYNODE_ACTION_POLLPREPARE);
+	else
+		nextActionReinit();
+}
+
 void MyNodeItemTSL2591::actionPollPrepare(void)
 {
-	_sensor.enable();
-	nextAction( MYNODE_ACTION_POLLRUN, _sensor.getTime() );
+	if( _sensor.enable() )
+		nextAction( MYNODE_ACTION_POLLRUN, _sensor.getTime() );
+	else
+		nextActionReinit();
 }
 
 void MyNodeItemTSL2591::actionPollRun(void)
 {
 	++_run;
-	nextAction( MYNODE_ACTION_POLLPREPARE, _interval / _polls );
-	MyNodeTime now = MyNodeNow();
 
 	uint32_t raw = _sensor.getFullLuminosity();
 	_sensor.disable();
@@ -79,8 +97,11 @@ void MyNodeItemTSL2591::actionPollRun(void)
 #ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 get"));
 #endif
+		nextActionReinit();
 		return;
 	}
+
+	nextAction( MYNODE_ACTION_POLLPREPARE, _interval / _polls );
 
 	uint16_t full = raw & 0xFFFF;
 	uint16_t ir = raw >> 16;
@@ -88,7 +109,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	float lux = _sensor.calculateLux( full, ir );
 
 #if MYNODE_DEBUG
-	Serial.println(F("TSL2591"));
+	Serial.print(F("TSL2591 run ")); Serial.println(_run);
 	Serial.print(F(" lux: ")); Serial.println( lux );
 	Serial.print(F(" visible: ")); Serial.println( visible );
 	Serial.print(F(" ir: ")); Serial.println( ir );
@@ -99,6 +120,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	alux.add( lux );
 
 	if( lux >= TSL2591_LUX_CLIPPED ){
+		send(_msg_set(0, V_CUSTOM).set(F("clipped")));
 #ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 lux"));
 #endif

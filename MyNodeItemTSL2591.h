@@ -15,15 +15,15 @@ public:
 
 	void setPolls( uint8_t polls ); // polls per sendInterval
 	void setAvg( uint8_t num ); // how many values to use for averaging
-	// TODO: bool setGain();
-	// TODO: bool setDuration();
-
-	virtual void registered(void);
+	void setGain( tsl2591Gain_t gain );
+	void setIntegration( tsl2591IntegrationTime_t integration );
 
 protected:
 	virtual void runAction( MyNodeAction action );
+	void actionInit(void);
 	void actionPollPrepare(void);
 	void actionPollRun(void);
+	void nextActionReinit();
 
 private:
 	Sensor_TSL2591 _sensor;

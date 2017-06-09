@@ -68,7 +68,8 @@ enum {
 };
 
 #ifdef WANT_TSL2591
-#define TSL_INTERVAL (150L * 1000)
+//#define TSL_INTERVAL (150L * 1000)
+#define TSL_INTERVAL (30L * 1000)
 MyNodeItemTSL2591 tsl(
 	SENSORID_LUX, SENSORID_VISIBLE, SENSORID_IR,
 	5
@@ -113,8 +114,17 @@ void before() {
 
 #ifdef WANT_TSL2591
 	tsl.setSendInterval(TSL_INTERVAL);
-	tsl.setPolls(2);
-	tsl.setAvg(3);
+	tsl.setPolls(1);
+	tsl.setAvg(2);
+
+	tsl.setGain(TSL2591_GAIN_LOW);
+	// tsl.setGain(TSL2591_GAIN_HIGH);
+
+	// tsl.setIntegration(TSL2591_INTEGRATIONTIME_100MS);
+	// ... 200, 300, 400, 500, ...
+	// tsl.setIntegration(TSL2591_INTEGRATIONTIME_600MS);
+	tsl.setIntegration(TSL2591_INTEGRATIONTIME_200MS);
+
 	MyNodeRegisterItem( &tsl );
 #endif
 
