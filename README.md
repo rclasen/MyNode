@@ -6,7 +6,7 @@ To recap MySensors terms:
 
 * a **node** is an actual device on the MySensors netowrk.
 * each node can have several **sensors**
-* each sensor has a **sensor id** 0..255 within the node
+* each sensor has a **sensor child id** 0..255 within the node
 * there are predefined **sensor types** (S_something defines)
 * each sensor can send/receive different **value types** (V_something defines)
 * MySensors mostly tries to hide what kind of **datat type** you're using for values (integer, float, string)...
@@ -50,6 +50,8 @@ how to use existing Items.
 For adding new item types, it's likely a good idea to start by looking
 at the TSL2591 item class.
 
+**WARNING**: The API is still in development and changes frequently.
+
 ## Installation
 
 Just pull/download/copy this to your Arduino libraries folder.
@@ -60,6 +62,8 @@ If you want to use the internal reference voltage calibration, take a
 look at the examples/calibrateVref sketch to meassure the internal
 reference voltage and store it as calibration in EEPROM.
 
+Please note, that the TSL2591 support is using my own local(?) fork of
+the Adafruit_TSL2591 library to avoid some of it's shortcommings.
 
 ## License
 
