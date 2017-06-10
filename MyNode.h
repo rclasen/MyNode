@@ -7,11 +7,9 @@
 #define MYNODE_DEBUG 1
 #define MYNODE_ERROR 1
 
+#include "MyProgmem.h"
 #include "MyTime.h"
 #include "MyNodePanic.h"
-
-#define PGMT( pgm_ptr ) \
-	(reinterpret_cast< const __FlashStringHelper * >( pgm_ptr ))
 
 /************************************************************
  *
