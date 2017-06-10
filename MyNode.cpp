@@ -1,5 +1,5 @@
 #include "MyNode.h"
-#include "MyNodeAdc.h"
+#include "MyAdc.h"
 
 #define MYNODE_ITEM_NONE 255
 
@@ -170,7 +170,7 @@ void MyNodeReceiveTime(unsigned long ts)
 }
 
 /************************************************************
- * MyNodeAdc - optional
+ * MyAdc - optional
  */
 
 bool adc_init = false;
@@ -181,7 +181,7 @@ void MyNodeEnableAdc( void )
 		return;
 
 	// TODO: get Adc Intref calibration data from EEPROM
-	MyNodeAdcIntrefSet( 1100 );
+	MyAdcIntrefSet( 1100 );
 	adc_init = true;
 }
 

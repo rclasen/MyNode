@@ -1,4 +1,4 @@
-#include "MyNodeAdc.h"
+#include "MyAdc.h"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -16,12 +16,12 @@ uint16_t _vcc = 0;
 // calibration of internal 1.1V reference defaults to exact 1.1v
 uint16_t _adc_intref = 1100;
 
-void MyNodeAdcIntrefSet( uint16_t actual_mvolts )
+void MyAdcIntrefSet( uint16_t actual_mvolts )
 {
 	_adc_intref = actual_mvolts;
 }
 
-uint16_t MyNodeAdcIntrefGet( void )
+uint16_t MyAdcIntrefGet( void )
 {
 	return _adc_intref;
 }
@@ -50,7 +50,7 @@ uint16_t readVcc( ) {
 	return ( 1023L * _adc_intref / raw );
 }
 
-uint16_t MyNodeAdcVcc( MyTime maxage )
+uint16_t MyAdcVcc( MyTime maxage )
 {
 	MyTime now = MyTimeNow();
 
@@ -62,9 +62,9 @@ uint16_t MyNodeAdcVcc( MyTime maxage )
 	return _vcc;
 }
 
-uint16_t MyNodeAdcRead( uint8_t pin, MyTime vccage )
+uint16_t MyAdcRead( uint8_t pin, MyTime vccage )
 {
-	uint16_t vcc = MyNodeAdcVcc( vccage );
+	uint16_t vcc = MyAdcVcc( vccage );
 
 	// DEFAULT: use vcc as reference
 	analogReference(DEFAULT);

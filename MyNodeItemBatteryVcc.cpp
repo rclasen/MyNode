@@ -1,5 +1,5 @@
 #include "MyNodeItemBatteryVcc.h"
-#include "MyNodeAdc.h"
+#include "MyAdc.h"
 
 MyNodeItemBatteryVcc::MyNodeItemBatteryVcc() : MyNodeItem( 1 )
 {
@@ -46,7 +46,7 @@ void MyNodeItemBatteryVcc::actionPollRun( void )
 {
 	nextAction( MYNODE_ACTION_POLLRUN, _interval );
 
-	uint16_t mvolt = MyNodeAdcVcc();
+	uint16_t mvolt = MyAdcVcc();
 
 	float volt = .001 * mvolt;
 

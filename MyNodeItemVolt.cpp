@@ -1,5 +1,5 @@
 #include "MyNodeItemVolt.h"
-#include "MyNodeAdc.h"
+#include "MyAdc.h"
 
 MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 		uint8_t analog_pin, uint8_t vcc_pin
@@ -59,7 +59,7 @@ void MyNodeItemVolt::actionPollRun( void )
 {
 	nextActionPoll( _interval );
 
-	uint16_t mvolt = MyNodeAdcRead( _analog );
+	uint16_t mvolt = MyAdcRead( _analog );
 	powerOff();
 
 	float volt = .001 * mvolt;
