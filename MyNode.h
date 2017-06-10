@@ -4,7 +4,8 @@
 #include <Arduino.h>
 #include <core/MySensorsCore.h>
 
-//#define MYNODE_DEBUG 1
+#define MYNODE_DEBUG 1
+#define MYNODE_ERROR 1
 
 #include "MyNodeTime.h"
 #include "MyNodePanic.h"

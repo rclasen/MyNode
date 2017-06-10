@@ -105,8 +105,6 @@ MyNodeItemBatteryVcc battery;
 // before
 void before() {
 #ifdef DEBUG
-	// setup the serial port baud rate
-	Serial.begin(MY_BAUD_RATE);
 	Serial.println(F("before"));
 #endif
 

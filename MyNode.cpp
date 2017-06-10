@@ -140,6 +140,9 @@ void MyNodeLoop()
 	if( ret == MY_WAKE_UP_BY_TIMER ){
 		MyNodeDelta( sleep_needed );
 
+	} else if( ret == MY_SLEEP_NOT_POSSIBLE ){
+		// TODO: MY_SLEEP_NOT_POSSIBLE
+
 	} else {
 #if MYNODE_DEBUG
 		Serial.print(F("MN loop int="));

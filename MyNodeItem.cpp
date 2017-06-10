@@ -110,7 +110,7 @@ void MyNodeItem::schedule( void )
 #if MYNODE_DEBUG
 	Serial.print(F("MNI SCHED item="));
 	Serial.print((unsigned int)this);
-	Serial.print(F(" ation="));
+	Serial.print(F(" action="));
 	Serial.println(_nextAction);
 #endif
 	if( _nextAction == MYNODE_ACTION_NONE ){
