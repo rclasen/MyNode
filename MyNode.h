@@ -8,8 +8,8 @@
 #define MYNODE_ERROR 1
 
 #include "MyProgmem.h"
+#include "MyAssert.h"
 #include "MyTime.h"
-#include "MyNodePanic.h"
 
 /************************************************************
  *
@@ -97,7 +97,7 @@ protected:
 	void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type );
 
 	// statemachine of this item:
-	virtual void runAction( MyNodeAction action );
+	virtual void runAction( MyNodeAction action ) = 0;
 
 	MyNodeAction getNextAction( void );
 
@@ -179,5 +179,9 @@ void MyNodeReceiveTime(unsigned long ts);
 // MyNodeItems may request extra features
 // linker only adds this code, if it's used
 void MyNodeEnableAdc( void );
+
+// TODO: optional panic reason
+void MyNodePanic( void );
+
 
 #endif

@@ -1,7 +1,11 @@
 #ifndef MyAvg_h
 #define MyAvg_h
 
-#include "MyNodePanic.h"
+#include "MyAssert.h"
+#include "MyProgmem.h"
+
+static const char ALOC[] PROGMEM = "MyAvg.h";
+#define ASSERT(e) myassert(PGMT(ALOC), e );
 
 // no class as this allows allocating custom sized lists
 // without need for remembering list address and size.
@@ -50,10 +54,8 @@ public:
 	MyAvg( uint8_t size = 5 )
 	{
 		_list = new T[size];
-		if( ! _list ){
-			MyNodePanic();
-			return;
-		}
+		ASSERT(_list);
+
 		_size = size;
 		_have = 0;
 		_next = 0;

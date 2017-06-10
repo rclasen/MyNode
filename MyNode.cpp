@@ -1,6 +1,12 @@
 #include "MyNode.h"
 #include "MyAdc.h"
 
+#include <core/MyIndication.h>
+#include <core/MySensorsCore.h>
+
+static const char ALOC[] PROGMEM = "MyNode.cpp";
+#define ASSERT(e) myassert(PGMT(ALOC), e );
+
 #define MYNODE_ITEM_NONE 255
 
 uint8_t _itemc = 0;		// item count
@@ -21,10 +27,8 @@ void MyNodeInit( uint8_t itemc )
 #endif
 
 	_itemv = new MyNodeItem*[itemc](NULL);
-	if( _itemv == NULL ){
-		MyNodePanic();
-		return;
-	}
+	ASSERT( _itemv );
+
 	_itemc = itemc;
 	_itemn = 0;
 }
@@ -41,21 +45,8 @@ void MyNodeEnd()
 
 void MyNodeRegisterItem( MyNodeItem *item )
 {
-	if( ! item ){
-#ifdef MYNODE_ERROR
-		Serial.println(F("!MN REG: undefined"));
-#endif
-		MyNodePanic();
-		return;
-	}
-
-	if( _itemn >= _itemc ){
-#ifdef MYNODE_ERROR
-		Serial.println(F("!MN REG: itemc"));
-#endif
-		MyNodePanic();
-		return;
-	}
+	ASSERT(  item );
+	ASSERT(  _itemn < _itemc );
 
 	_itemv[_itemn] = item;
 
@@ -185,3 +176,30 @@ void MyNodeEnableAdc( void )
 	adc_init = true;
 }
 
+/************************************************************
+ * catch and send assertions
+ */
+
+void __myassert(const __FlashStringHelper *__location,
+		int __lineno,
+		const __FlashStringHelper *__sexp)
+{
+#ifdef MYNODE_DEBUG
+	// transmit diagnostic informations through serial link.
+	Serial.print(F("assertion "));
+	Serial.println(__location);
+	Serial.print(F("line "));
+	Serial.println(__lineno, DEC);
+	Serial.println(__sexp);
+	Serial.flush();
+#endif
+	// TODO: send error message to GW
+	MyNodePanic();
+}
+
+void MyNodePanic( void )
+{
+	setIndication(INDICATION_ERR_HW_INIT);
+	while(1)
+		doYield();
+}

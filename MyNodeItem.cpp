@@ -1,5 +1,7 @@
 #include "MyNode.h"
-#include "MyNodePanic.h";
+
+static const char ALOC[] PROGMEM = "MyNodeItem.h";
+#define ASSERT(e) myassert(PGMT(ALOC), e );
 
 MyMessage _nodeMsg;
 
@@ -10,12 +12,10 @@ MyMessage _nodeMsg;
 
 MyNodeItem::MyNodeItem( uint8_t sensorc )
 {
-	_sensorc = sensorc;
 	_sensorv = new MyNodeItemSensor[sensorc]();
-	if( ! _sensorv ){
-		MyNodePanic();
-		return;
-	}
+	ASSERT( _sensorv );
+
+	_sensorc = sensorc;
 	_interval = 300L * 1000; // 5 min
 	nextAction( MYNODE_ACTION_INIT );
 }
@@ -39,12 +39,7 @@ uint8_t MyNodeItem::getSensorCount( void )
 
 void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type )
 {
-	if( snum >= _sensorc ){
-#ifdef MYNODE_ERROR
-		Serial.println(F("!MNI sensorc"));
-#endif
-		return;
-	}
+	ASSERT( snum < _sensorc );
 
 	_sensorv[snum].id = id;
 	_sensorv[snum].type = type;
@@ -52,12 +47,7 @@ void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type )
 
 uint8_t MyNodeItem::getSensorId(uint8_t snum)
 {
-	if( snum >= _sensorc ){
-#ifdef MYNODE_ERROR
-		Serial.println(F("!MNI sensorc"));
-#endif
-		return 0;
-	}
+	ASSERT( snum < _sensorc );
 
 	return _sensorv[snum].id;
 }
@@ -125,13 +115,6 @@ void MyNodeItem::schedule( void )
 
 	if( _nextAction == MYNODE_ACTION_NONE )
 		nextAction( MYNODE_ACTION_NONE, MYNODE_TIME_MAXDUR );
-}
-
-void MyNodeItem::runAction( MyNodeAction action )
-{
-#ifdef MYNODE_ERROR
-	Serial.println(F("!MNI RUN: action"));
-#endif
 }
 
 void MyNodeItem::nextAt( MyNodeAction action, MyTime time )
