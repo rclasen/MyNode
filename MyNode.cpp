@@ -85,22 +85,22 @@ void MyNodeLoop()
 {
 	// run items... which might take some time
 	for( uint8_t i = 0; i < _itemn; ++i ){
-		MyNodeTime now = MyNodeNow();
-		MyNodeTime next = _itemv[i]->getNextTime();
-		MyNodeTime remaining = next - MyNodeNow();
+		MyTime now = MyTimeNow();
+		MyTime next = _itemv[i]->getNextTime();
+		MyTime remaining = next - MyTimeNow();
 
 		if( remaining > MYNODE_TIME_MAXDUR )
 			_itemv[i]->schedule();
 	}
 
 	// now do a quick run to calculate sleep
-	MyNodeTime sleep_needed = MYNODE_TIME_MAXDUR;
-	MyNodeTime now = MyNodeNow();
+	MyTime sleep_needed = MYNODE_TIME_MAXDUR;
+	MyTime now = MyTimeNow();
 	uint8_t nextitem = MYNODE_ITEM_NONE;
 
 	for( uint8_t i = 0; i < _itemn; ++i ){
-		MyNodeTime next = _itemv[i]->getNextTime();
-		MyNodeTime remaining = next - now;
+		MyTime next = _itemv[i]->getNextTime();
+		MyTime remaining = next - now;
 
 #if MYNODE_DEBUG
 		Serial.print(F("MN loop i="));
@@ -138,7 +138,7 @@ void MyNodeLoop()
 
 	int8_t ret = sleep( sleep_needed );
 	if( ret == MY_WAKE_UP_BY_TIMER ){
-		MyNodeDelta( sleep_needed );
+		MyTimeDelta( sleep_needed );
 
 	} else if( ret == MY_SLEEP_NOT_POSSIBLE ){
 		// TODO: MY_SLEEP_NOT_POSSIBLE

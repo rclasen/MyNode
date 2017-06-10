@@ -10,7 +10,7 @@
 
 
 // cached vcc reading
-MyNodeTime _vcc_time(0);
+MyTime _vcc_time(0);
 uint16_t _vcc = 0;
 
 // calibration of internal 1.1V reference defaults to exact 1.1v
@@ -50,9 +50,9 @@ uint16_t readVcc( ) {
 	return ( 1023L * _adc_intref / raw );
 }
 
-uint16_t MyNodeAdcVcc( MyNodeTime maxage )
+uint16_t MyNodeAdcVcc( MyTime maxage )
 {
-	MyNodeTime now = MyNodeNow();
+	MyTime now = MyTimeNow();
 
 	if( ! _vcc || now - _vcc_time > maxage ){
 		_vcc = readVcc();
@@ -62,7 +62,7 @@ uint16_t MyNodeAdcVcc( MyNodeTime maxage )
 	return _vcc;
 }
 
-uint16_t MyNodeAdcRead( uint8_t pin, MyNodeTime vccage )
+uint16_t MyNodeAdcRead( uint8_t pin, MyTime vccage )
 {
 	uint16_t vcc = MyNodeAdcVcc( vccage );
 

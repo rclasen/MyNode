@@ -7,7 +7,7 @@
 #define MYNODE_DEBUG 1
 #define MYNODE_ERROR 1
 
-#include "MyNodeTime.h"
+#include "MyTime.h"
 #include "MyNodePanic.h"
 
 #define PGMT( pgm_ptr ) \
@@ -74,7 +74,7 @@ public:
 	virtual ~MyNodeItem();
 #endif
 
-	void setSendInterval( MyNodeTime interval );
+	void setSendInterval( MyTime interval );
 
 	// sensor list management:
 	uint8_t getSensorCount( void );
@@ -87,7 +87,7 @@ public:
 	void presentation(void);
 	void schedule( void );
 
-	MyNodeTime getNextTime( void );
+	MyTime getNextTime( void );
 
 	// TODO: move (optional) send interval to base class
 
@@ -104,11 +104,11 @@ protected:
 	MyNodeAction getNextAction( void );
 
 	// scheduling helper:
-	void nextAt( MyNodeAction action, MyNodeTime time );
+	void nextAt( MyNodeAction action, MyTime time );
 
-	inline void nextAction( MyNodeAction action, MyNodeTime delay = 0 )
+	inline void nextAction( MyNodeAction action, MyTime delay = 0 )
 	{
-		nextAt( action, MyNodeNext( delay ));
+		nextAt( action, MyTimeNext( delay ));
 	};
 
 	// message helper:
@@ -122,13 +122,13 @@ protected:
 				vtype, ack);
 	};
 
-	MyNodeTime _interval;
+	MyTime _interval;
 private:
 	uint8_t _sensorc;	// sensor count
 	MyNodeItemSensor *_sensorv;	// sensor IDs
 
 	MyNodeAction _nextAction;
-	MyNodeTime _nextTime;
+	MyTime _nextTime;
 };
 
 /************************************************************

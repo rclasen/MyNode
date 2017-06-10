@@ -27,7 +27,7 @@ MyNodeItem::~MyNodeItem()
 }
 #endif
 
-void MyNodeItem::setSendInterval( MyNodeTime interval )
+void MyNodeItem::setSendInterval( MyTime interval )
 {
 	_interval = interval;
 }
@@ -100,7 +100,7 @@ MyNodeAction MyNodeItem::getNextAction( void )
 	return _nextAction;
 }
 
-MyNodeTime MyNodeItem::getNextTime( void )
+MyTime MyNodeItem::getNextTime( void )
 {
 	return _nextTime;
 }
@@ -134,7 +134,7 @@ void MyNodeItem::runAction( MyNodeAction action )
 #endif
 }
 
-void MyNodeItem::nextAt( MyNodeAction action, MyNodeTime time )
+void MyNodeItem::nextAt( MyNodeAction action, MyTime time )
 {
 #if 0
 	Serial.print(F("MNI NXT item="));

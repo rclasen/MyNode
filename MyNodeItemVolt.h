@@ -12,7 +12,7 @@ public:
 	virtual void registered(void);
 
 protected:
-	inline void nextActionPoll( MyNodeTime delay = 0 )
+	inline void nextActionPoll( MyTime delay = 0 )
 	{
 		nextAction( ( _vcc == MYNODE_PIN_NONE)
 			? MYNODE_ACTION_POLLRUN
@@ -28,7 +28,7 @@ protected:
 	void powerOn( void );
 	void powerOff( void );
 
-	MyNodeTime _wait;
+	MyTime _wait;
 private:
 	uint8_t _analog, _vcc;
 };
