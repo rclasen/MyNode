@@ -29,8 +29,12 @@ The lib comes with some predefined MyNodeItems, but it's easy to add
 your own ones by inheriting from MyNodeItem or any of it's derived
 classes.
 
-There are also helpers (averaging, calibration for internal ADC
-refernce, ...) for common tasks available.
+There are also helpers for common tasks:
+
+* MyAssert: assertions without memory penalty
+* MyAvg: averaging of data
+* MyAdc: calibrated use of internal 1.1v reference for analog input
+* MyTime: time estmate hack as millis() doesn't increase during sleep
 
 ## Motivation
 
