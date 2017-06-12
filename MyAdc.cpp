@@ -10,11 +10,11 @@
 
 
 // cached vcc reading
-MyTime _vcc_time(0);
-uint16_t _vcc = 0;
+static MyTime _vcc_time(0);
+static uint16_t _vcc = 0;
 
 // calibration of internal 1.1V reference defaults to exact 1.1v
-uint16_t _adc_intref = 1100;
+static uint16_t _adc_intref = 1100;
 
 void MyAdcIntrefSet( uint16_t actual_mvolts )
 {

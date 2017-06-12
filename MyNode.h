@@ -58,6 +58,7 @@ public:
 	uint8_t type;
 };
 
+// shared message buffer
 extern MyMessage _nodeMsg;
 
 class MyNodeItem {

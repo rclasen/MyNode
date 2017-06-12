@@ -25,7 +25,7 @@
 // load MyNode library
 #include <MyNode.h>
 
-// periodic heartbeat messages
+// if you need to know a node is alive faster as you send periodic  updates:
 #define WANT_HEARTBEAT
 
 // when powered directly from battery

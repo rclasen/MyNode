@@ -11,14 +11,15 @@ static const char ALOC[] PROGMEM = "MyNode.cpp";
 
 #define MYNODE_ITEM_NONE 255
 
-uint8_t _itemc = 0;		// item count
-uint8_t _itemn = 0;		// next item index
-MyNodeItem **_itemv = NULL;	// item array
+static uint8_t _itemc = 0;		// item count
+static uint8_t _itemn = 0;		// next item index
+static MyNodeItem **_itemv = NULL;	// item array
 
 // heartbeat object
 // separate pointer allows linker to omit actual object when it's not used
-MyNodeItemHeartbeat _heartbeat;
-MyNodeItemHeartbeat *_hb = NULL;
+static MyNodeItemHeartbeat _heartbeat;
+static MyNodeItemHeartbeat *_hb = NULL;
+
 
 uint16_t hwFreeMem();		// from MySensors/hal/architecture/MyHw*.cpp
 

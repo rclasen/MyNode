@@ -1,6 +1,6 @@
 #include "MyTime.h"
 
-MyTime _delta = 0;
+static MyTime _delta = 0;
 
 void MyTimeFixup( MyTime delta )
 {
