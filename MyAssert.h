@@ -6,6 +6,9 @@
  * progmem with current gcc. This will hog up RAM.
  *
  * This implementation lacks these details but at least won't use RAM.
+ *
+ * Another problem is the lack of stderr/logging... so, you may want to
+ * provide your own __myassert function to handle the assertions.
  */
 
 #  if defined(NDEBUG)
