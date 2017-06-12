@@ -19,6 +19,8 @@ MyTime MyTimeNow( void );
 MyTime MyTimeNext( MyTime delta );
 
 // add time correction millis() didn't notice
-void MyTimeDelta( MyTime delta );
+void MyTimeFixup( MyTime delta );
+
+MyTime MyTimeDuration( MyTime start, MyTime end );
 
 #endif

@@ -2,7 +2,7 @@
 
 MyTime _delta = 0;
 
-void MyTimeDelta( MyTime delta )
+void MyTimeFixup( MyTime delta )
 {
 	_delta += delta;
 }
@@ -19,3 +19,14 @@ MyTime MyTimeNext( MyTime delta )
 
 	return MyTimeNow() + delta;
 }
+
+MyTime MyTimeDuration( MyTime start, MyTime end )
+{
+	MyTime dur = end - start;
+
+	if( dur > MYNODE_TIME_MAXDUR )
+		return 0;
+
+	return dur;
+}
+
