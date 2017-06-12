@@ -101,7 +101,8 @@ void MyNodeItemTSL2591::actionPollRun(void)
 		return;
 	}
 
-	nextAction( MYNODE_ACTION_POLLPREPARE, _interval / _polls );
+	nextAction( MYNODE_ACTION_POLLPREPARE,
+		_interval / _polls - _sensor.getTime() );
 
 	uint16_t full = raw & 0xFFFF;
 	uint16_t ir = raw >> 16;
