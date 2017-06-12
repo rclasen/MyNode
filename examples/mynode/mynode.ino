@@ -25,6 +25,9 @@
 // load MyNode library
 #include <MyNode.h>
 
+// periodic heartbeat messages
+#define WANT_HEARTBEAT
+
 // when powered directly from battery
 #define WANT_BATTERY
 #ifdef WANT_BATTERY
@@ -66,6 +69,10 @@ enum {
 
 	SENSORID_MAX,
 };
+
+#ifdef WANT_HEARTBEAT
+#define HB_INTERVAL (300L * 1000)
+#endif
 
 #ifdef WANT_TSL2591
 //#define TSL_INTERVAL (150L * 1000)
@@ -109,6 +116,10 @@ void before() {
 #endif
 
 	MyNodeInit( 4 );
+
+#ifdef WANT_HEARTBEAT
+	MyNodeRegisterHeartbeat(HB_INTERVAL);
+#endif
 
 #ifdef WANT_TSL2591
 	tsl.setSendInterval(TSL_INTERVAL);

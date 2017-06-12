@@ -92,6 +92,8 @@ public:
 	// TODO: runtime config?
 	// TODO: receive data?
 	// TODO: only send data when it changed?
+	// TODO: retry failed send
+	// TODO: retry on missing ack
 
 protected:
 	void MyNodeItem::setSensor(uint8_t snum, uint8_t id, mysensor_sensor type );
@@ -144,12 +146,12 @@ private:
  * use MyNodeItemBatteryVCC for battery reporting
 
  * use MyNodeItemControl for
- * - assign new node id?
- * - get/set runtime config of items / node
- * - trigger update of all items
+ * - TODO: assign new node id?
+ * - TODO: get/set runtime config of items / node
+ * - TODO: trigger update of all items
 
  * each item has builtin support for
- * - trigger an update
+ * - TODO: trigger an update
 
  * MySensors has builtin support for
  * - reboot
@@ -168,6 +170,11 @@ void MyNodeEnd( void );
 #endif
 
 void MyNodeRegisterItem( MyNodeItem *item );
+
+// enable Hearbeats
+void MyNodeRegisterHeartbeat( MyTime interval = 24L * 3600 * 1000 );
+// Items just report activity... no matter if heartbeats are enabled.
+void MyNodeActivity( void );
 
 // hooks to run from mysensors:
 // need to be called manually in your .ino

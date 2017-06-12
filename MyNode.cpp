@@ -4,6 +4,8 @@
 #include <core/MyIndication.h>
 #include <core/MySensorsCore.h>
 
+#include "MyNodeItemHeartbeat.h";
+
 static const char ALOC[] PROGMEM = "MyNode.cpp";
 #define ASSERT(e) myassert(PGMT(ALOC), e );
 
@@ -12,6 +14,11 @@ static const char ALOC[] PROGMEM = "MyNode.cpp";
 uint8_t _itemc = 0;		// item count
 uint8_t _itemn = 0;		// next item index
 MyNodeItem **_itemv = NULL;	// item array
+
+// heartbeat object
+// separate pointer allows linker to omit actual object when it's not used
+MyNodeItemHeartbeat _heartbeat;
+MyNodeItemHeartbeat *_hb = NULL;
 
 uint16_t hwFreeMem();		// from MySensors/hal/architecture/MyHw*.cpp
 
@@ -64,9 +71,28 @@ void MyNodeRegisterItem( MyNodeItem *item )
 	item->registered();
 }
 
+void MyNodeRegisterHeartbeat( MyTime interval )
+{
+	if( ! _hb ){
+		MyNodeRegisterItem( &_heartbeat );
+		_hb = &_heartbeat;
+	}
+
+	_hb->setSendInterval( interval );
+}
+
+void MyNodeActivity( void )
+{
+	if( _hb )
+		_hb->activity();
+
+	// TODO: smart sleep
+}
+
 void MyNodePresentation( const __FlashStringHelper *name, const __FlashStringHelper *version )
 {
 	sendSketchInfo( name, version );
+	MyNodeActivity();
 
 	for( uint8_t i = 0; i < _itemn; ++i )
 		_itemv[i]->presentation();
@@ -119,6 +145,17 @@ void MyNodeLoop()
 	if( ! sleep_needed )
 		return;
 
+	if( sleep_needed <= MY_SMART_SLEEP_WAIT_DURATION_MS ){
+		wait( MY_SMART_SLEEP_WAIT_DURATION_MS );
+		return;
+	}
+
+	// TODO: smart sleep
+	//(void)_sendRoute(build(_msgTmp, GATEWAY_ADDRESS, NODE_SENSOR_ID, C_INTERNAL,
+	//		I_PRE_SLEEP_NOTIFICATION).set((uint32_t)MY_SMART_SLEEP_WAIT_DURATION_MS));
+	wait( MY_SMART_SLEEP_WAIT_DURATION_MS );
+	sleep_needed -= MY_SMART_SLEEP_WAIT_DURATION_MS;
+
 	// TODO: use multiple sleep()s for large sleep_neede to reduce
 	// impact on time guestimation when an interrupt is received.
 
@@ -127,7 +164,7 @@ void MyNodeLoop()
 		MyTimeFixup( sleep_needed );
 
 	} else if( ret == MY_SLEEP_NOT_POSSIBLE ){
-		// TODO: MY_SLEEP_NOT_POSSIBLE
+		// ok, we did something else but sleeping to cause the delay
 
 	} else {
 #if MYNODE_DEBUG
