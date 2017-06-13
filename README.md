@@ -35,6 +35,7 @@ There are also helpers for common tasks:
 * MyAvg: averaging of data
 * MyAdc: calibrated use of internal 1.1v reference for analog input
 * MyTime: time estmate hack as millis() doesn't increase during sleep
+* MyBattery: get remaining capacity for specific cell types (alkaline, ...)
 
 ## Motivation
 

@@ -3,21 +3,27 @@
 
 MyNodeItemBatteryVcc::MyNodeItemBatteryVcc() : MyNodeItem( 1 )
 {
-	_min = 2600;
-	_max = 3400;
+	_min = 2700; // arduino minimum
+	_type = MyBatteryAlkaline;
+	_cells = 2;
 	setSendInterval( 24L * 3600 * 1000 ); // 1 day
 	setSensor(0, MYNODE_SENSORID_BATTERY, S_MULTIMETER );
 };
 
 
-void MyNodeItemBatteryVcc::setVoltageMin( uint16_t min )
+void MyNodeItemBatteryVcc::setCircuitMin( uint16_t min )
 {
 	_min = min;
 }
 
-void MyNodeItemBatteryVcc::setVoltageMax( uint16_t max )
+void MyNodeItemBatteryVcc::setBatteryType( MyBatteryType type )
 {
-	_max = max;
+	_type = type;
+}
+
+void MyNodeItemBatteryVcc::setBatteryCells( uint8_t cells )
+{
+	_cells = cells;
 }
 
 void MyNodeItemBatteryVcc::registered( void )
@@ -50,17 +56,7 @@ void MyNodeItemBatteryVcc::actionPollRun( void )
 
 	float volt = .001 * mvolt;
 
-	uint8_t level;
-	if( mvolt <= _min ){
-		level = 0;
-
-	} else if( mvolt > _max ){
-		level = 100;
-
-	} else {
-		level = 100.0 * (mvolt - _min) / (_max - _min);;
-	}
-
+	uint8_t level = MyBatteryCircuit( mvolt, _min, _cells, _type );
 
 #if MYNODE_DEBUG
 	Serial.print(F("MNI BatVcc volt="));

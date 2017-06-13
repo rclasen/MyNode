@@ -101,7 +101,6 @@ MyNodeItemControl control;
 #ifdef WANT_BATTERY
 #define BAT_INTERVAL (300L * 1000)
 #define BAT_MVOLT_MIN 2600
-#define BAT_MVOLT_MAX 3300
 MyNodeItemBatteryVcc battery;
 #endif
 
@@ -151,8 +150,7 @@ void before() {
 #ifdef WANT_BATTERY
 	// battery should be last item:
 	battery.setSendInterval(BAT_INTERVAL);
-	battery.setVoltageMin(BAT_MVOLT_MIN);
-	battery.setVoltageMax(BAT_MVOLT_MAX);
+	battery.setCircuitMin(BAT_MVOLT_MIN);
 	MyNodeRegisterItem( &battery );
 #endif
 }
