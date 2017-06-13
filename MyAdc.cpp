@@ -62,7 +62,7 @@ uint16_t MyAdcVcc( MyTime maxage )
 	return _vcc;
 }
 
-uint16_t MyAdcRead( uint8_t pin, MyTime vccage )
+uint16_t MyAdcReadVcc( uint8_t pin, MyTime vccage )
 {
 	uint16_t vcc = MyAdcVcc( vccage );
 
@@ -71,4 +71,13 @@ uint16_t MyAdcRead( uint8_t pin, MyTime vccage )
 	uint16_t raw = analogRead(pin);
 
 	return (uint32_t)vcc * raw / 1023;
+}
+
+uint16_t MyAdcReadInt( uint8_t pin )
+{
+	// INTERNAL: use internal 1.1v reference
+	analogReference(INTERNAL);
+	uint16_t raw = analogRead(pin);
+
+	return (uint32_t)_adc_intref * raw / 1023;
 }

@@ -59,7 +59,7 @@ void MyNodeItemVolt::actionPollRun( void )
 {
 	nextActionPoll( _interval );
 
-	uint16_t mvolt = MyAdcRead( _analog );
+	uint16_t mvolt = MyAdcReadVcc( _analog );
 	powerOff();
 
 	float volt = .001 * mvolt;
