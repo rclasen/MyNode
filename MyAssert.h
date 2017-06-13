@@ -1,6 +1,10 @@
 #ifndef MyAssert_h
 #define MyAssert_h
 
+#include <Arduino.h>
+#include "MyProgmem.h"
+
+
 /*
  * standard assert.h uses __func__ and __FILE__ which both aren't in
  * progmem with current gcc. This will hog up RAM.
