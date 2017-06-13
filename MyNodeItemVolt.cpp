@@ -8,8 +8,14 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 	_analog = analog_pin;
 	_vcc = vcc_pin;
 	_wait = 50;
+	_factor = 1;
 	setSensor(0, id, S_MULTIMETER );
 };
+
+void MyNodeItemVolt::setFactor( float factor )
+{
+	_factor = factor;
+}
 
 void MyNodeItemVolt::registered( void )
 {
@@ -59,10 +65,10 @@ void MyNodeItemVolt::actionPollRun( void )
 {
 	nextActionPoll( _interval );
 
-	uint16_t mvolt = MyAdcReadVcc( _analog );
+	uint16_t mvolt = MyAdcReadInt( _analog );
 	powerOff();
 
-	float volt = .001 * mvolt;
+	float volt = _factor * .001 * mvolt;
 
 #if MYNODE_DEBUG
 	Serial.print(F("MNI Volt volt="));

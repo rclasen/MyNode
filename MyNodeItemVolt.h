@@ -3,11 +3,21 @@
 
 #include "MyNode.h"
 
+// talk about using a mosfet to enable something just for measurement
+// https://bitbucket.org/talk2/whisper-node-avr#markdown-header-voltage-monitor
+
+// https://forum.mysensors.org/topic/581/mysensors-power-consumption/17
+//  I'm using P channel MOSFET SI2333DDS-T1-GE3. It has low internal
+//  resistance G is conencted to Arduino DO, S to 3.3 V and D to switch
+//  regulator.
+
 class MyNodeItemVolt : public MyNodeItem {
 public:
 	MyNodeItemVolt( uint8_t id,
 			uint8_t analog_pin,
 			uint8_t vcc_pin = MYNODE_PIN_NONE );
+
+	void setFactor( float factor );
 
 	virtual void registered(void);
 
@@ -29,6 +39,7 @@ protected:
 	void powerOff( void );
 
 	MyTime _wait;
+	float _factor;
 private:
 	uint8_t _analog, _vcc;
 };

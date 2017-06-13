@@ -85,6 +85,7 @@ MyNodeItemTSL2591 tsl(
 
 #ifdef WANT_VOLT
 #define VOLT_INTERVAL (150L * 1000)
+#define VOLT_FACTOR 1.0
 #define VOLT_PIN_ANALOG A0
 #define VOLT_PIN_VCC 2
 MyNodeItemVolt volt(
@@ -139,6 +140,7 @@ void before() {
 
 #ifdef WANT_VOLT
 	volt.setSendInterval(VOLT_INTERVAL);
+	volt.setFactor(VOLT_FACTOR);
 	MyNodeRegisterItem( &volt );
 #endif
 
