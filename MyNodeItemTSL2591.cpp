@@ -9,6 +9,7 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id
 {
 	_polls = 3;
 	_run = 0;
+	_avg = 3;
 	setSensor( 0, id_lux, S_LIGHT_LEVEL );
 	setSensor( 1, id_vis, S_LIGHT_LEVEL );
 	setSensor( 2, id_ir, S_LIGHT_LEVEL );
