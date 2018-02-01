@@ -90,6 +90,8 @@ public:
 
 	// TODO: move (optional) send interval to base class
 
+	// TODO: abstract error reporting
+
 	// TODO: runtime config?
 	// TODO: receive data?
 	// TODO: only send data when it changed?
@@ -188,6 +190,7 @@ void MyNodeReceiveTime(unsigned long ts);
 // linker only adds this code, if it's used
 void MyNodeEnableAdc( void );
 
+// TODO: abstract eeprom access
 // TODO: optional panic reason
 void MyNodePanic( void );
 

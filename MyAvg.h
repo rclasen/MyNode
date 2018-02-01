@@ -80,6 +80,8 @@ public:
 
 	T calc( uint8_t want = UINT8_MAX )
 	{
+		// TODO: handle want=0 myself
+
 		if( ! _have )
 			return 0;
 
