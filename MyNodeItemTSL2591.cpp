@@ -131,14 +131,21 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	if( _run < _polls )
 		return;
 
+	lux = alux.calc(_avg);
+	visible = avis.calc(_avg);
+	ir = air.calc(_avg);
+
 #ifdef MYNODE_DEBUG
 	Serial.println(F("TSL2591 send"));
+	Serial.print(F(" lux: ")); Serial.println( lux, 3 );
+	Serial.print(F(" visible: ")); Serial.println( visible );
+	Serial.print(F(" ir: ")); Serial.println( ir );
 #endif
 	_run = 0;
 
-	send(_msg_set(0, V_LIGHT_LEVEL).set(alux.calc(_avg),3));
-	send(_msg_set(1, V_LIGHT_LEVEL).set(avis.calc(_avg)));
-	send(_msg_set(2, V_LIGHT_LEVEL).set(air.calc(_avg)));
+	send(_msg_set(0, V_LIGHT_LEVEL).set(lux,3));
+	send(_msg_set(1, V_LIGHT_LEVEL).set(visible));
+	send(_msg_set(2, V_LIGHT_LEVEL).set(ir));
 
 	// TODO: handle failed send
 }
