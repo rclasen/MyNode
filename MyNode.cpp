@@ -4,126 +4,108 @@
 #include <core/MyIndication.h>
 #include <core/MySensorsCore.h>
 
-#include "MyNodeItemHeartbeat.h";
-
 static const char ALOC[] PROGMEM = "MyNode.cpp";
 #define ASSERT(e) myassert(PGMT(ALOC), e );
 
-#define MYNODE_ITEM_NONE 255
+extern MyNodeItem *_MyNodeItems[];
 
-static uint8_t _itemc = 0;		// item count
-static uint8_t _itemn = 0;		// next item index
-static MyNodeItem **_itemv = NULL;	// item array
-
-// heartbeat object
-// separate pointer allows linker to omit actual object when it's not used
-static MyNodeItemHeartbeat _heartbeat;
-static MyNodeItemHeartbeat *_hb = NULL;
-
-
-uint16_t hwFreeMem();		// from MySensors/hal/architecture/MyHw*.cpp
-
-/************************************************************
- * MyNode
- */
-
-void MyNodeInit( uint8_t itemc )
+static void nvDefaults( void )
 {
 #if MYNODE_DEBUG
-	Serial.print(F("NM free memory: "));
+	Serial.println(F("NM nvDefaults"));
+#endif
+	MyNodeNvSet16( MYNODE_NV_INTREF, 1100L );
+
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item ){
+		(*item)->nvDefaults();
+	}
+}
+
+void before( void )
+{
+#if MYNODE_DEBUG
+	Serial.print(F("NM BEFORE, free memory: "));
 	Serial.println(hwFreeMem());
 #endif
 
-	_itemv = new MyNodeItem*[itemc](NULL);
-	ASSERT( _itemv );
-
-	_itemc = itemc;
-	_itemn = 0;
-}
-
-#if do_deletes
-void MyNodeEnd()
-{
-	// maybe?
-	for( uint8_t i = 0; i < _itemn; ++i )
-		delete _itemv[i];
-	delete _itemv;
-}
-#endif
-
-void MyNodeRegisterItem( MyNodeItem *item )
-{
-	ASSERT(  item );
-	ASSERT(  _itemn < _itemc );
-
-	_itemv[_itemn] = item;
-
-	uint8_t cnt = item->getSensorCount();
-#if MYNODE_DEBUG
-	Serial.print(F("MN REG i="));
-	Serial.print(_itemn);
-	Serial.print(F(" item="));
-	Serial.print((unsigned int)item);
-	Serial.print(F(" cnt="));
-	Serial.println(cnt);
-#endif
-	++_itemn;
-
-	item->registered();
-}
-
-void MyNodeRegisterHeartbeat( MyTime interval )
-{
-	if( ! _hb ){
-		MyNodeRegisterItem( &_heartbeat );
-		_hb = &_heartbeat;
+	size_t nvSize = 0;
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item ){
+		(*item)->setNvStart( MYNODE_NV_ITEMS + nvSize );
+		nvSize += (*item)->getNvSize();
 	}
 
-	_hb->setSendInterval( interval );
+	nvSize += MYNODE_NV_MAGIC_SIZE
+		+ MYNODE_NV_INTREF_SIZE;
+
+#if MYNODE_DEBUG
+	Serial.print(F("MN nvSize="));
+	Serial.println(nvSize);
+#endif
+
+	// TODO: better NV magic tag
+	if( nvSize != MyNodeNvGet16( MYNODE_NV_MAGIC ) ){
+		nvDefaults();
+		MyNodeNvSet16( MYNODE_NV_MAGIC, nvSize );
+	}
+
+	if( MyNodeInit )
+		MyNodeInit();
+
 }
 
-void MyNodeActivity( void )
+void setup( void )
 {
-	if( _hb )
-		_hb->activity();
+#if MYNODE_DEBUG
+	Serial.println(F("NM SETUP"));
+#endif
 
-	// TODO: smart sleep
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item ){
+#if MYNODE_DEBUG
+		Serial.print(F("MN SETUP "));
+		Serial.print((*item)->getName());
+		Serial.print(F(" item="));
+		Serial.println((unsigned int)(*item));
+#endif
+
+		(*item)->setup();
+	}
+	Serial.println(F("NM setup done "));
 }
 
-void MyNodePresentation( const __FlashStringHelper *name, const __FlashStringHelper *version )
+void presentation()
 {
-	sendSketchInfo( name, version );
-	MyNodeActivity();
+	sendSketchInfo( SKETCH_NAME, SKETCH_VERSION );
+	_MyNodeHeartbeat.activity();
 
-	for( uint8_t i = 0; i < _itemn; ++i )
-		_itemv[i]->presentation();
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item )
+		(*item)->presentation();
 }
 
-void MyNodeLoop()
+void loop()
 {
 	// run items... which might take some time
-	for( uint8_t i = 0; i < _itemn; ++i ){
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item ){
 		MyTime remaining = MyTimeDuration( MyTimeNow(),
-			_itemv[i]->getNextTime() );
+			(*item)->getNextTime() );
 
 		if( ! remaining )
-			_itemv[i]->schedule();
+			(*item)->schedule();
 	}
 
 	// now do a quick run to calculate sleep
 	MyTime sleep_needed = MYNODE_TIME_MAXDUR;
 	MyTime now = MyTimeNow();
-	uint8_t nextitem = MYNODE_ITEM_NONE;
+	MyNodeItem *nextitem = NULL;
 
-	for( uint8_t i = 0; i < _itemn; ++i ){
-		MyTime next = _itemv[i]->getNextTime();
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item ){
+		MyTime next = (*item)->getNextTime();
 		MyTime remaining = MyTimeDuration( now, next );
 
 #if MYNODE_DEBUG
-		Serial.print(F("MN loop i="));
-		Serial.print(i);
+		Serial.print(F("MN loop "));
+		Serial.print((*item)->getName());
 		Serial.print(F(" item="));
-		Serial.print((unsigned int)_itemv[i]);
+		Serial.print((unsigned int)(*item));
 		Serial.print(F(" now="));
 		Serial.print(now);
 		Serial.print(F(" next="));
@@ -133,15 +115,17 @@ void MyNodeLoop()
 #endif
 		if( remaining < sleep_needed ){
 			sleep_needed = remaining;
-			nextitem = i;
+			nextitem = (*item);
 		}
 	}
 
 #if MYNODE_DEBUG
 	Serial.print(F("MN loop sleep="));
 	Serial.print(sleep_needed);
-	Serial.print(F(" by="));
-	Serial.println(nextitem);
+	Serial.print(F(" by "));
+	Serial.print(nextitem->getName());
+	Serial.print(F(" item="));
+	Serial.println((unsigned int)nextitem);
 #endif
 	if( ! sleep_needed )
 		return;
@@ -177,18 +161,28 @@ void MyNodeLoop()
 	}
 }
 
-void MyNodeReceive(const MyMessage & msg)
+void receive(const MyMessage & msg)
 {
+	for( MyNodeItem **item = _MyNodeItems; *item; ++item ){
+		uint8_t snum = (*item)->getSensorById( msg.sensor );
+		if( snum != MYNODE_SENSORNUM_NONE ){
 #if MYNODE_DEBUG
-	Serial.println(F("MN receive"));
+			Serial.print(F("MN RCV "));
+			Serial.print((*item)->getName());
+			Serial.print(F(" item="));
+			Serial.println((unsigned int)(*item));
 #endif
-	// TODO: receive()
+			(*item)->receive( snum, msg );
+			break;
+		}
+	}
 }
 
-void MyNodeReceiveTime(unsigned long ts)
+void receiveTime( unsigned long ts )
 {
 #if MYNODE_DEBUG
-	Serial.println(F("MN receiveTime"));
+	Serial.print(F("MN receiveTime: "));
+	Serial.println(ts);
 #endif
 	// TODO: receiveTime()
 }
@@ -204,8 +198,11 @@ void MyNodeEnableAdc( void )
 	if( adc_init )
 		return;
 
-	// TODO: get Adc Intref calibration data from EEPROM
-	MyAdcIntrefSet( 1100 );
+	uint16_t intref = MyNodeNvGet16( MYNODE_NV_INTREF );
+#if MYNODE_DEBUG
+	Serial.print(F("NM intref: ")); Serial.println(intref);
+#endif
+	MyAdcIntrefSet( intref );
 	adc_init = true;
 }
 
@@ -233,6 +230,9 @@ void __myassert(const __FlashStringHelper *__location,
 void MyNodePanic( void )
 {
 	setIndication(INDICATION_ERR_HW_INIT);
+#ifdef MYNODE_DEBUG
+	Serial.println(F("panic"));
+#endif
 	while(1)
 		doYield();
 }

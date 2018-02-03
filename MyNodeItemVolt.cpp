@@ -1,6 +1,8 @@
 #include "MyNodeItemVolt.h"
 #include "MyAdc.h"
 
+static const char name[] PROGMEM = "Volt";
+
 MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 		uint8_t analog_pin, uint8_t vcc_pin
 		) : MyNodeItem( 1 )
@@ -12,12 +14,17 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 	setSensor(0, id, S_MULTIMETER );
 };
 
+const __FlashStringHelper *MyNodeItemVolt::getName( void )
+{
+	return PGMT(name);
+}
+
 void MyNodeItemVolt::setFactor( float factor )
 {
 	_factor = factor;
 }
 
-void MyNodeItemVolt::registered( void )
+void MyNodeItemVolt::setup( void )
 {
 	MyNodeEnableAdc();
 
@@ -75,7 +82,7 @@ void MyNodeItemVolt::actionPollRun( void )
 	Serial.println(volt);
 #endif
 
-	send(_msg_set(0, V_VOLTAGE).set(volt,2));
+	send(_msg(0, V_VOLTAGE).set(volt,2));
 	// TODO: handle failed send
 }
 

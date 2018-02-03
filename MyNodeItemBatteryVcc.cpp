@@ -1,15 +1,22 @@
 #include "MyNodeItemBatteryVcc.h"
 #include "MyAdc.h"
 
+static const char name[] PROGMEM = "BatteryVcc";
+
 MyNodeItemBatteryVcc::MyNodeItemBatteryVcc() : MyNodeItem( 1 )
 {
 	_min = 2700; // arduino minimum
 	_type = MyBatteryAlkaline;
 	_cells = 2;
-	setSendInterval( 24L * 3600 * 1000 ); // 1 day
+	setSendInterval( (MyTime)24 * 3600 * 1000 ); // 1 day
 	setSensor(0, MYNODE_SENSORID_BATTERY, S_MULTIMETER );
 };
 
+
+const __FlashStringHelper *MyNodeItemBatteryVcc::getName( void )
+{
+	return PGMT(name);
+}
 
 void MyNodeItemBatteryVcc::setCircuitMin( uint16_t min )
 {
@@ -26,7 +33,7 @@ void MyNodeItemBatteryVcc::setBatteryCells( uint8_t cells )
 	_cells = cells;
 }
 
-void MyNodeItemBatteryVcc::registered( void )
+void MyNodeItemBatteryVcc::setup( void )
 {
 	MyNodeEnableAdc();
 
@@ -67,7 +74,7 @@ void MyNodeItemBatteryVcc::actionPollRun( void )
 	Serial.println(level);
 #endif
 
-	send(_msg_set(0, V_VOLTAGE).set(volt,2));
+	send(_msg(0, V_VOLTAGE).set(volt,2));
 	sendBatteryLevel( level );
 	// TODO: handle failed send
 }

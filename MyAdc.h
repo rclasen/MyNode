@@ -3,7 +3,11 @@
 
 #include "MyTime.h"
 
+// get voltage of internal reference using externally measured Vcc as reference
+uint16_t MyAdcReadIntref( uint16_t external_mvolts );
+
 // calibration: set/get actual voltage of internal ADC reference
+// it's defined to be 1100 mvolts but might vary a bit on each device
 void MyAdcIntrefSet( uint16_t actual_mvolts );
 uint16_t MyAdcIntrefGet();
 

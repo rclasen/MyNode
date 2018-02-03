@@ -1,7 +1,7 @@
 #ifndef MyNodeItemBatteryVcc_h
 #define MyNodeItemBatteryVcc_h
 
-#include "MyNode.h"
+#include "MyNodeItem.h"
 #include "MyBattery.h"
 
 /*
@@ -22,12 +22,13 @@ class MyNodeItemBatteryVcc : public MyNodeItem {
 public:
 	MyNodeItemBatteryVcc();
 
+	virtual const __FlashStringHelper *getName( void );
 	void setCircuitMin( uint16_t min );
 	void setBatteryType( MyBatteryType type );
 	void setBatteryCells( uint8_t cells );
 
 protected:
-	virtual void registered(void);
+	virtual void setup(void);
 	virtual void runAction(MyNodeAction action);
 	void actionPollRun(void);
 

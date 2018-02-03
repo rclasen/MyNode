@@ -1,6 +1,6 @@
 ## Synopsis
 
-MyNode is a library for MySensors nodes.
+MyNode is an "Operating System" for MySensors nodes.
 
 To recap MySensors terms:
 
@@ -12,24 +12,42 @@ To recap MySensors terms:
 * MySensors mostly tries to hide what kind of **datat type** you're using for values (integer, float, string)...
 * in addition to sensors, a node also handles **internal** commands - eg. to report battery level
 
-In this lib, a MyNodeItem may implement the functionality of one or
-several sensors... to allow a single external data poll to feed them
-all.
+MyNode providing the infrastructure for MyNodeItems. It's taking over
+the usual hooks (loop(), before(), ...). Instead it just takes a global
+list of MyNodeItems and their configuration. The list of services
+provided for the MyNodeItems is growing:
 
-MyNodeItems can also be used to implement "special" tasks like handling
+* power saving
+* Scheduling for async operation of multiple MyNodeItems.
+* automated EEPROM loading/saving
+* managing ADC reference calibration data
+* heartbeats (if desired)
+* dispatching received messages to items
+* TODO: retransmit handling (if desired)
+
+Each MyNodeItems can map data retrieved from a single source to a number
+of MySensors child ids.
+
+MyNodeItems are also used to implement "special" tasks like handling
 some of the internal commands (provide battery level) or offering means
 for runtime configuration of the node.
 
-As a node usually has several items, MyNode dispatches requests to the
-registered items and implements advanced scheduling... allowing to save
-power or perform other tasks while one item is waiting for somthing else
-to happen.
+"MyNodeItem" actually is a virtual base from which the individual
+implementations are derived. While virtual classes come with a SRAM
+memory penalty for the vtables (one for each class), this allows easy
+implementation of new items. The lib comes with a growing list of
+predefined MyNodeItems:
 
-The lib comes with some predefined MyNodeItems, but it's easy to add
-your own ones by inheriting from MyNodeItem or any of it's derived
-classes.
+* TSL2951 light/ir sensor
+* Dallas DS18B20 temperature sensors
+* Analog inputs
+* Battery Level (direcly powered)
+* TODO: Battery Level (analog input, when using a converter)
+* TODO: interrupt binary input
+* TODO: binary output
+* TODO: BH1750 light sensor
 
-There are also helpers for common tasks:
+There are also lower level helpers for common tasks:
 
 * MyAssert: assertions without memory penalty
 * MyAvg: averaging of data
@@ -42,6 +60,14 @@ There are also helpers for common tasks:
 The design goal was to be highly flexible, having some real scheduling
 and a clean abstraction while still being as conservative to memory as
 possible.
+
+This means, I'm trying to
+
+* avoid pulling in float routines (may save flash space)
+* avoid dynamic/heap memory (no memory fragmentation)
+* use PROGMEM wherever possible (save RAM space)
+* use virtual classes only when benefit is bigger than memory penalty
+* allow the linker to omit code for unused features
 
 When looking at (very few) other node implementations I didn't see this.
 This project also felt like having a reasonable scope to get some
@@ -60,6 +86,10 @@ at the TSL2591 item class.
 ## Installation
 
 Just pull/download/copy this to your Arduino libraries folder.
+
+**WARNING**: currently this needs some tiny modifications to MySensors
+and some of the sensor libraries I haven't bothered to push upstream,
+yet.
 
 Use the examples/mynode sketch as a start and customize as needed.
 

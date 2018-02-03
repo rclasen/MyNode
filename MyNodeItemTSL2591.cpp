@@ -1,5 +1,7 @@
 #include "MyNodeItemTSL2591.h"
 
+static const char name[] PROGMEM = "TSL2591";
+
 MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id_ir,
 	uint8_t avg_size ) :
 	MyNodeItem( 3 ),
@@ -15,6 +17,11 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id
 	setSensor( 2, id_ir, S_LIGHT_LEVEL );
 	setSendInterval( 150L * 1000 ); // 2.5min
 };
+
+const __FlashStringHelper *MyNodeItemTSL2591::getName( void )
+{
+	return PGMT(name);
+}
 
 void MyNodeItemTSL2591::setPolls( uint8_t polls )
 {
@@ -55,7 +62,7 @@ void MyNodeItemTSL2591::runAction( MyNodeAction action )
 		;;
 	}
 
-	send(_msg_set(0, V_CUSTOM).set(F("assert: action")));
+	send(_msg(0, V_CUSTOM).set(F("assert: action")));
 #ifdef MYNODE_ERROR
 	Serial.print(F("!TSL2591 action="));
 	Serial.println(action);
@@ -68,7 +75,7 @@ void MyNodeItemTSL2591::nextActionReinit(void)
 	Serial.println(F("!TSL2591 reinit"));
 #endif
 	nextAction(MYNODE_ACTION_INIT, 30000 );
-	send(_msg_set(0, V_CUSTOM).set(F("reinit")));
+	send(_msg(0, V_CUSTOM).set(F("reinit")));
 }
 
 void MyNodeItemTSL2591::actionInit(void)
@@ -122,7 +129,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	alux.add( lux );
 
 	if( lux >= TSL2591_LUX_CLIPPED ){
-		send(_msg_set(0, V_CUSTOM).set(F("clipped")));
+		send(_msg(0, V_CUSTOM).set(F("clipped")));
 #ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 lux"));
 #endif
@@ -143,9 +150,9 @@ void MyNodeItemTSL2591::actionPollRun(void)
 #endif
 	_run = 0;
 
-	send(_msg_set(0, V_LIGHT_LEVEL).set(lux,3));
-	send(_msg_set(1, V_LIGHT_LEVEL).set(visible));
-	send(_msg_set(2, V_LIGHT_LEVEL).set(ir));
+	send(_msg(0, V_LIGHT_LEVEL).set(lux,3));
+	send(_msg(1, V_LIGHT_LEVEL).set(visible));
+	send(_msg(2, V_LIGHT_LEVEL).set(ir));
 
 	// TODO: handle failed send
 }

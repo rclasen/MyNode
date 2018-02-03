@@ -1,7 +1,7 @@
 #ifndef MyNodeItemVolt_h
 #define MyNodeItemVolt_h
 
-#include "MyNode.h"
+#include "MyNodeItem.h"
 
 // talk about using a mosfet to enable something just for measurement
 // https://bitbucket.org/talk2/whisper-node-avr#markdown-header-voltage-monitor
@@ -17,9 +17,11 @@ public:
 			uint8_t analog_pin,
 			uint8_t vcc_pin = MYNODE_PIN_NONE );
 
+	virtual const __FlashStringHelper *getName( void );
+
 	void setFactor( float factor );
 
-	virtual void registered(void);
+	virtual void setup(void);
 
 protected:
 	inline void nextActionPoll( MyTime delay = 0 )

@@ -1,7 +1,10 @@
-#include "MyNode.h"
+#include "MyNodeItemHeartbeat.h";
 
 static const char ALOC[] PROGMEM = "MyNodeItem.h";
 #define ASSERT(e) myassert(PGMT(ALOC), e );
+
+static const char name[] PROGMEM = "unnamed";
+
 
 MyMessage _nodeMsg;
 
@@ -14,18 +17,28 @@ MyNodeItem::MyNodeItem( uint8_t sensorc )
 {
 	_sensorv = new MyNodeItemSensor[sensorc]();
 	ASSERT( _sensorv );
-
 	_sensorc = sensorc;
+
+	_nvstart = 0;
+
 	_interval = 300L * 1000; // 5 min
 	nextAction( MYNODE_ACTION_INIT );
 }
 
-#if do_deletes
 MyNodeItem::~MyNodeItem()
 {
 	delete _sensorv;
 }
-#endif
+
+const size_t MyNodeItem::getNvSize( void ) // virtual
+{
+	return 2;
+}
+
+const __FlashStringHelper *MyNodeItem::getName( void ) // virtual
+{
+	return PGMT(name);
+}
 
 void MyNodeItem::setSendInterval( MyTime interval )
 {
@@ -70,7 +83,17 @@ bool MyNodeItem::haveSensorId(uint8_t id)
 	return getSensorById( id ) != MYNODE_SENSORNUM_NONE;
 }
 
-void MyNodeItem::registered( void )
+void MyNodeItem::setNvStart( uint8_t *start )
+{
+	_nvstart = start;
+}
+
+void MyNodeItem::nvDefaults( void ) // virtual
+{
+	MyNodeNvSet16( _nvstart, _interval ); // TODO nv stuff
+}
+
+void MyNodeItem::setup( void ) // virtual
 {
 }
 
@@ -117,6 +140,10 @@ void MyNodeItem::schedule( void )
 		nextAction( MYNODE_ACTION_NONE, MYNODE_TIME_MAXDUR );
 }
 
+void MyNodeItem::receive( uint8_t snum, const MyMessage &msg ) // virtual
+{
+}
+
 void MyNodeItem::nextAt( MyNodeAction action, MyTime time )
 {
 #if 0
@@ -130,4 +157,12 @@ void MyNodeItem::nextAt( MyNodeAction action, MyTime time )
 	_nextAction = action;
 	_nextTime = time;
 }
+
+bool MyNodeItem::send( MyMessage &msg )
+{
+	_MyNodeHeartbeat.activity();
+
+	return ::send( msg, mGetRequestAck(msg) );
+}
+
 

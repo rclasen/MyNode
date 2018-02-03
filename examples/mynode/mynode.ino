@@ -25,9 +25,6 @@
 // load MyNode library
 #include <MyNode.h>
 
-// if you need to know a node is alive faster as you send periodic  updates:
-#define WANT_HEARTBEAT
-
 // when powered directly from battery
 #define WANT_BATTERY
 #ifdef WANT_BATTERY
@@ -41,15 +38,11 @@
 #include <MyNodeItemVolt.h>
 #endif
 
-#define WANT_TSL2591
+//#define WANT_TSL2591
 #ifdef WANT_TSL2591
 #include <MyNodeItemTSL2591.h>
 #endif
 
-// TODO: #define WANT_CONTROL
-#ifdef WANT_CONTROL
-#include <MyNodeItemConntrol.h>
-#endif
 
 /***********************************
  * node config
@@ -69,10 +62,6 @@ enum {
 
 	SENSORID_MAX,
 };
-
-#ifdef WANT_HEARTBEAT
-#define HB_INTERVAL (300L * 1000)
-#endif
 
 #ifdef WANT_TSL2591
 //#define TSL_INTERVAL (150L * 1000)
@@ -94,31 +83,43 @@ MyNodeItemVolt volt(
 );
 #endif
 
-#ifdef WANT_CONTROL
-MyNodeItemControl control;
-#endif
-
 #ifdef WANT_BATTERY
 #define BAT_INTERVAL (300L * 1000)
 #define BAT_MVOLT_MIN 2600
 MyNodeItemBatteryVcc battery;
 #endif
 
+MyNodeItems(
+#ifdef WANT_HEARTBEAT
+	&heartbeat,
+#endif
+#ifdef WANT_TSL2591
+	&tsl,
+#endif
+#ifdef WANT_VOLT
+	&volt,
+#endif
+#ifdef WANT_CONTROL
+	&control
+#endif
+#ifdef WANT_BATTERY
+	// battery should be last item:
+	&battery
+#endif
+);
+
+
 /***********************************
  * no config changes below this line
  */
 
-
-// before
-void before() {
+void MyNodeInit() {
 #ifdef DEBUG
 	Serial.println(F("before"));
 #endif
 
-	MyNodeInit( 4 );
-
 #ifdef WANT_HEARTBEAT
-	MyNodeRegisterHeartbeat(HB_INTERVAL);
+	heartbeat.setSendInterval( HB_INTERVAL );
 #endif
 
 #ifdef WANT_TSL2591
@@ -133,50 +134,16 @@ void before() {
 	// ... 200, 300, 400, 500, ...
 	// tsl.setIntegration(TSL2591_INTEGRATIONTIME_600MS);
 	tsl.setIntegration(TSL2591_INTEGRATIONTIME_200MS);
-
-	MyNodeRegisterItem( &tsl );
 #endif
 
 #ifdef WANT_VOLT
 	volt.setSendInterval(VOLT_INTERVAL);
 	volt.setFactor(VOLT_FACTOR);
-	MyNodeRegisterItem( &volt );
-#endif
-
-#ifdef WANT_CONTROL
-	MyNodeRegisterItem( &control );
 #endif
 
 #ifdef WANT_BATTERY
-	// battery should be last item:
 	battery.setSendInterval(BAT_INTERVAL);
 	battery.setCircuitMin(BAT_MVOLT_MIN);
-	MyNodeRegisterItem( &battery );
 #endif
 }
 
-/***********************************
- * no changes below this line
- */
-
-// presentation
-void presentation() {
-	MyNodePresentation( PGMT(SKETCH_NAME), PGMT(SKETCH_VERSION) );
-
-}
-
-// loop
-void loop() {
-	MyNodeLoop();
-
-}
-
-// receive
-void receive(const MyMessage &message) {
-	MyNodeReceive(message);
-}
-
-// receive
-void receiveTime( unsigned long ts ){
-	MyNodeReceiveTime(ts);
-}

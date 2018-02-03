@@ -28,7 +28,7 @@ uint16_t MyAdcIntrefGet( void )
 
 // TODO: this is arduino/avr specific, use hwCPUVoltage or similar elsewhere
 
-uint16_t readVcc( ) {
+static uint16_t readAdc( ) {
 #if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 	ADMUX = _BV(REFS0) | _BV(MUX4) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
 #elif defined (__AVR_ATtiny24__) || defined(__AVR_ATtiny44__) || defined(__AVR_ATtiny84__)
@@ -43,11 +43,17 @@ uint16_t readVcc( ) {
 	ADCSRA |= _BV(ADSC); // Start conversion
 	while (bit_is_set(ADCSRA,ADSC)); // measuring
 
-	uint16_t raw = ADC;
-	if( ! raw )
-		return 0;
+	// vcc =  1023L * _adc_intref / ADC
+	return ADC;
+}
 
-	return ( 1023L * _adc_intref / raw );
+uint16_t MyAdcReadIntref( uint16_t external_mvolts )
+{
+	// 1100 * Vcc1 (mvolt per voltmeter) / Vcc2 (mvolt per readVcc())
+	//return 1100 * external_mvolts / ( 1023L * 1100 / readAdc());;
+	// 1100 * Vcc1 / ( 1023L * 1100 / readAdc() )
+	// 1100 * Vcc1 * readAdc() / 1023L * 1100
+	return (uint32_t)readAdc() * external_mvolts / 1023L;
 }
 
 uint16_t MyAdcVcc( MyTime maxage )
@@ -55,7 +61,8 @@ uint16_t MyAdcVcc( MyTime maxage )
 	MyTime now = MyTimeNow();
 
 	if( ! _vcc || now - _vcc_time > maxage ){
-		_vcc = readVcc();
+		uint16_t raw = readAdc();
+		_vcc = raw ? (uint32_t)1023L * _adc_intref / raw : 0;
 		_vcc_time = now;
 	}
 

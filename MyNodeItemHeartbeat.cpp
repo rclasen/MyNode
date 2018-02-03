@@ -1,12 +1,21 @@
 #include "MyNodeItemHeartbeat.h"
 #include "MyAdc.h"
 
+MyNodeItemHeartbeat _MyNodeHeartbeat;
+
+static const char name[] PROGMEM = "Heartbeat";
+
 MyNodeItemHeartbeat::MyNodeItemHeartbeat() : MyNodeItem( 0 )
 {
+	setSendInterval( (MyTime)24 * 3600 * 1000 );  // 1 day
 };
 
+const __FlashStringHelper *MyNodeItemHeartbeat::getName( void )
+{
+	return PGMT(name);
+}
 
-void MyNodeItemHeartbeat::registered( void )
+void MyNodeItemHeartbeat::setup( void )
 {
 	activity();
 }
