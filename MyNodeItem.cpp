@@ -165,4 +165,15 @@ bool MyNodeItem::send( MyMessage &msg )
 	return ::send( msg, mGetRequestAck(msg) );
 }
 
-
+void MyNodeItem::sendError( const uint8_t snum, const __FlashStringHelper *msg )
+{
+#ifdef MYNODE_ERROR
+	Serial.print(F("!"));
+	Serial.print(this->getName());
+	Serial.print(F(" s="));
+	Serial.print(snum);
+	Serial.print(F(" "));
+	Serial.println(msg);
+#endif
+	send(_msg(snum, V_CUSTOM).set(msg));
+}

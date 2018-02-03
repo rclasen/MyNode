@@ -36,23 +36,11 @@ void MyNodeItemBatteryVcc::setBatteryCells( uint8_t cells )
 void MyNodeItemBatteryVcc::setup( void )
 {
 	MyNodeEnableAdc();
-
-	nextAction( MYNODE_ACTION_POLLRUN );
 }
 
 void MyNodeItemBatteryVcc::runAction( MyNodeAction action )
 {
-	switch(action){
-	case MYNODE_ACTION_POLLRUN:
-		actionPollRun();
-		return;
-		;;
-	}
-
-#ifdef MYNODE_ERROR
-	Serial.print(F("!MNI BatVcc action="));
-	Serial.println(action);
-#endif
+	actionPollRun();
 }
 
 void MyNodeItemBatteryVcc::actionPollRun( void )

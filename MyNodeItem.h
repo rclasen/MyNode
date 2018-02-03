@@ -127,6 +127,8 @@ protected:
 				vtype, ack);
 	};
 
+	void sendError( const uint8_t snum, const __FlashStringHelper *msg );
+
 	MyTime _interval;
 private:
 	uint8_t _sensorc;	// sensor count

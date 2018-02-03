@@ -44,17 +44,13 @@ void MyNodeItemVolt::runAction( MyNodeAction action )
 		return;
 		;;
 
-	case MYNODE_ACTION_INIT:
-	case MYNODE_ACTION_POLLPREPARE:
+	//case MYNODE_ACTION_INIT:
+	//case MYNODE_ACTION_POLLPREPARE:
+	default:
 		actionPollPrepare();;
 		return;
 		;;
 	}
-
-#ifdef MYNODE_ERROR
-	Serial.print(F("!MNI Volt action="));
-	Serial.println(action);
-#endif
 }
 
 void MyNodeItemVolt::actionPollPrepare( void )

@@ -57,17 +57,12 @@ void MyNodeItemTSL2591::runAction( MyNodeAction action )
 		return;
 		;;
 
-	case MYNODE_ACTION_INIT:
+	//case MYNODE_ACTION_INIT:
+	default:
 		actionInit();;
 		return;
 		;;
 	}
-
-	send(_msg(0, V_CUSTOM).set(F("assert: action")));
-#ifdef MYNODE_ERROR
-	Serial.print(F("!TSL2591 action="));
-	Serial.println(action);
-#endif
 }
 
 void MyNodeItemTSL2591::nextActionReinit(void)
@@ -75,7 +70,6 @@ void MyNodeItemTSL2591::nextActionReinit(void)
 #ifdef MYNODE_ERROR
 	Serial.println(F("!TSL2591 reinit"));
 #endif
-	send(_msg(0, V_CUSTOM).set(F("reinit")));
 	nextAction(MYNODE_ACTION_INIT, MYNODE_SECOND * 30 );
 }
 
@@ -83,16 +77,20 @@ void MyNodeItemTSL2591::actionInit(void)
 {
 	if( _sensor.setup() )
 		nextAction(MYNODE_ACTION_POLLPREPARE);
-	else
+	else {
+		sendError(0, F("setup failed"));
 		nextActionReinit();
+	}
 }
 
 void MyNodeItemTSL2591::actionPollPrepare(void)
 {
 	if( _sensor.enable() )
 		nextAction( MYNODE_ACTION_POLLRUN, _sensor.getTime() );
-	else
+	else {
 		nextActionReinit();
+		sendError(0, F("enable failed"));
+	}
 }
 
 void MyNodeItemTSL2591::actionPollRun(void)
@@ -103,9 +101,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	_sensor.disable();
 
 	if( raw == UINT32_MAX ){
-#ifdef MYNODE_ERROR
-		Serial.println(F("!TSL2591 get"));
-#endif
+		sendError(0, F("get failed"));
 		nextActionReinit();
 		return;
 	}
@@ -130,14 +126,13 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	alux.add( mlux );
 
 	if( mlux >= MYNODE_LUX * TSL2591_LUX_CLIPPED ){
-		send(_msg(0, V_CUSTOM).set(F("clipped")));
-#ifdef MYNODE_ERROR
-		Serial.println(F("!TSL2591 lux"));
-#endif
+		sendError(0, F("clipped"));
 	}
 
 	if( _run < _polls )
 		return;
+
+	_run = 0;
 
 	mlux = alux.calc(_avg);
 	visible = avis.calc(_avg);
@@ -149,7 +144,6 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	Serial.print(F(" visible: ")); Serial.println( visible );
 	Serial.print(F(" ir: ")); Serial.println( ir );
 #endif
-	_run = 0;
 
 	send(_msg(0, V_LIGHT_LEVEL).set(mlux));
 	send(_msg(1, V_LIGHT_LEVEL).set(MYNODE_LUX * visible));

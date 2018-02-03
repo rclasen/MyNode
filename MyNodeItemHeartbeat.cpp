@@ -27,17 +27,7 @@ void MyNodeItemHeartbeat::activity( void )
 
 void MyNodeItemHeartbeat::runAction( MyNodeAction action )
 {
-	switch(action){
-	case MYNODE_ACTION_POLLRUN:
-		actionPollRun();
-		return;
-		;;
-	}
-
-#ifdef MYNODE_ERROR
-	Serial.print(F("!MNI Heartbeat action="));
-	Serial.println(action);
-#endif
+	actionPollRun();
 }
 
 void MyNodeItemHeartbeat::actionPollRun( void )
