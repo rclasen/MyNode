@@ -33,7 +33,7 @@
 
 // TODO: external battery status - when using a voltage regulator
 
-#define WANT_VOLT
+//#define WANT_VOLT
 #ifdef WANT_VOLT
 #include <MyNodeItemVolt.h>
 #endif
@@ -41,6 +41,11 @@
 //#define WANT_TSL2591
 #ifdef WANT_TSL2591
 #include <MyNodeItemTSL2591.h>
+#endif
+
+#define WANT_DALLAS
+#ifdef WANT_DALLAS
+#include <MyNodeItemDS18B20.h>
 #endif
 
 
@@ -57,6 +62,9 @@ enum {
 	SENSORID_VISIBLE,
 	SENSORID_IR,
 
+	// DALLAS
+	SENSORID_DALLAS,
+
 	// VOLT
 	SENSORID_VOLT,
 
@@ -69,6 +77,16 @@ enum {
 MyNodeItemTSL2591 tsl(
 	SENSORID_LUX, SENSORID_VISIBLE, SENSORID_IR,
 	5
+);
+#endif
+
+#ifdef WANT_DALLAS
+//#define DALLAS_INTERVAL ( MYNODE_SECOND * 150 ) // 2.5min
+#define DALLAS_INTERVAL ( MYNODE_SECOND * 30 )
+OneWire onewire( 2 );
+MyNodeItemDS18B20 dallas(
+	SENSORID_DALLAS,
+	&onewire
 );
 #endif
 
@@ -95,6 +113,9 @@ MyNodeItems(
 #endif
 #ifdef WANT_TSL2591
 	&tsl,
+#endif
+#ifdef WANT_DALLAS
+	&dallas,
 #endif
 #ifdef WANT_VOLT
 	&volt,
@@ -124,8 +145,8 @@ void MyNodeInit() {
 
 #ifdef WANT_TSL2591
 	tsl.setSendInterval(TSL_INTERVAL);
-	tsl.setPolls(1);
-	tsl.setAvg(2);
+	tsl.setPolls(2);
+	tsl.setAvg(3);
 
 	tsl.setGain(TSL2591_GAIN_LOW);
 	// tsl.setGain(TSL2591_GAIN_HIGH);
@@ -134,6 +155,12 @@ void MyNodeInit() {
 	// ... 200, 300, 400, 500, ...
 	// tsl.setIntegration(TSL2591_INTEGRATIONTIME_600MS);
 	tsl.setIntegration(TSL2591_INTEGRATIONTIME_200MS);
+#endif
+
+#ifdef WANT_DALLAS
+	dallas.setSendInterval(DALLAS_INTERVAL);
+	dallas.setPolls(2);
+	dallas.setAvg(3);
 #endif
 
 #ifdef WANT_VOLT
