@@ -4,7 +4,10 @@
 #include "MyNodeCore.h";
 
 // to avoid float arithmetics, we use milli-lux:
-#define MYNODE_LUX1	(1000ul)
+#define MYNODE_LUX	(1000ul)
+
+// to avoid float arithmetics, we use deci-celsius:
+#define MYNODE_CELSIUS	(10ul)
 
 /************************************************************
  *

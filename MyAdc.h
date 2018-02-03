@@ -4,7 +4,7 @@
 #include "MyTime.h"
 
 // to avoid float arithmetics, we use milli-volts:
-#define MYNODE_VOLT1	(1000ul)
+#define MYNODE_VOLT	(1000ul)
 
 // get voltage of internal reference using externally measured Vcc as reference
 uint16_t MyAdcReadIntref( uint16_t external_mvolts );
@@ -15,10 +15,10 @@ void MyAdcIntrefSet( uint16_t actual_mvolts );
 uint16_t MyAdcIntrefGet();
 
 // return VCC in millivolts
-uint16_t MyAdcVcc( MyTime maxage = 60000 );
+uint16_t MyAdcVcc( MyTime maxage = (MYNODE_SECOND*60) );
 
 // return voltage at pin in mvolts (0..VCC) using VCC as reference
-uint16_t MyAdcReadVcc( uint8_t pin, MyTime vccage = 60000 );
+uint16_t MyAdcReadVcc( uint8_t pin, MyTime vccage = (MYNODE_SECOND*60) );
 
 // voltage at pin in mvolts (0..intref) using the calibrated internal 1.1V reference
 // always use this (with a voltage divider) if something else but Vcc is the power source

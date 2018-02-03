@@ -9,13 +9,14 @@ MyNodeItemTSL2591::MyNodeItemTSL2591( uint8_t id_lux, uint8_t id_vis, uint8_t id
 	avis( avg_size ),
 	air( avg_size )
 {
-	_polls = 3;
+	_polls = avg_size;
 	_run = 0;
-	_avg = 3;
+	_avg = avg_size;
+
 	setSensor( 0, id_lux, S_LIGHT_LEVEL );
 	setSensor( 1, id_vis, S_LIGHT_LEVEL );
 	setSensor( 2, id_ir, S_LIGHT_LEVEL );
-	setSendInterval( 150L * 1000 ); // 2.5min
+	setSendInterval( MYNODE_SECOND * 150 ); // 2.5min
 };
 
 const __FlashStringHelper *MyNodeItemTSL2591::getName( void )
@@ -25,12 +26,12 @@ const __FlashStringHelper *MyNodeItemTSL2591::getName( void )
 
 void MyNodeItemTSL2591::setPolls( uint8_t polls )
 {
-	_polls = polls;
+	_polls = polls; // TODO: nv
 }
 
 void MyNodeItemTSL2591::setAvg( uint8_t num )
 {
-	_avg = num;
+	_avg = num; // TODO: nv
 }
 
 void MyNodeItemTSL2591::setGain( tsl2591Gain_t gain )
@@ -74,8 +75,8 @@ void MyNodeItemTSL2591::nextActionReinit(void)
 #ifdef MYNODE_ERROR
 	Serial.println(F("!TSL2591 reinit"));
 #endif
-	nextAction(MYNODE_ACTION_INIT, 30000 );
 	send(_msg(0, V_CUSTOM).set(F("reinit")));
+	nextAction(MYNODE_ACTION_INIT, MYNODE_SECOND * 30 );
 }
 
 void MyNodeItemTSL2591::actionInit(void)
@@ -115,7 +116,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	uint16_t full = raw & 0xFFFF;
 	uint16_t ir = raw >> 16;
 	uint16_t visible = full - ir;
-	uint32_t mlux = MYNODE_LUX1 * _sensor.calculateLux( full, ir );
+	uint32_t mlux = MYNODE_LUX * _sensor.calculateLux( full, ir );
 
 #if MYNODE_DEBUG
 	Serial.print(F("TSL2591 run ")); Serial.println(_run);
@@ -128,7 +129,7 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	avis.add( visible );
 	alux.add( mlux );
 
-	if( mlux >= TSL2591_LUX_CLIPPED ){
+	if( mlux >= MYNODE_LUX * TSL2591_LUX_CLIPPED ){
 		send(_msg(0, V_CUSTOM).set(F("clipped")));
 #ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 lux"));
@@ -151,8 +152,8 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	_run = 0;
 
 	send(_msg(0, V_LIGHT_LEVEL).set(mlux));
-	send(_msg(1, V_LIGHT_LEVEL).set(MYNODE_LUX1 * visible));
-	send(_msg(2, V_LIGHT_LEVEL).set(MYNODE_LUX1 * ir));
+	send(_msg(1, V_LIGHT_LEVEL).set(MYNODE_LUX * visible));
+	send(_msg(2, V_LIGHT_LEVEL).set(MYNODE_LUX * ir));
 
 	// TODO: handle failed send
 }

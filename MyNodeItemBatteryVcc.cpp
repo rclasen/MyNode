@@ -8,7 +8,7 @@ MyNodeItemBatteryVcc::MyNodeItemBatteryVcc() : MyNodeItem( 1 )
 	_min = 2700; // arduino minimum
 	_type = MyBatteryAlkaline;
 	_cells = 2;
-	setSendInterval( (MyTime)24 * 3600 * 1000 ); // 1 day
+	setSendInterval( MYNODE_DAY );
 	setSensor(0, MYNODE_SENSORID_BATTERY, S_MULTIMETER );
 };
 

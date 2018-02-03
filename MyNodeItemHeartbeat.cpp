@@ -7,7 +7,7 @@ static const char name[] PROGMEM = "Heartbeat";
 
 MyNodeItemHeartbeat::MyNodeItemHeartbeat() : MyNodeItem( 0 )
 {
-	setSendInterval( (MyTime)24 * 3600 * 1000 );  // 1 day
+	setSendInterval( MYNODE_DAY );
 };
 
 const __FlashStringHelper *MyNodeItemHeartbeat::getName( void )

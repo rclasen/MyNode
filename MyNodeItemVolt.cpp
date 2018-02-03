@@ -10,7 +10,7 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 	_analog = analog_pin;
 	_vcc = vcc_pin;
 	_wait = 50;
-	_mfactor = MYNODE_VOLT1;
+	_mfactor = MYNODE_VOLT;
 	setSensor(0, id, S_MULTIMETER );
 };
 
@@ -75,7 +75,7 @@ void MyNodeItemVolt::actionPollRun( void )
 	uint16_t raw = MyAdcReadInt( _analog );
 	powerOff();
 
-	uint16_t mvolt = _mfactor * raw / MYNODE_VOLT1;
+	uint16_t mvolt = _mfactor * raw / MYNODE_VOLT;
 
 #if MYNODE_DEBUG
 	Serial.print(F("MNI Volt mvolt="));

@@ -21,7 +21,7 @@ MyNodeItem::MyNodeItem( uint8_t sensorc )
 
 	_nvstart = 0;
 
-	_interval = 300L * 1000; // 5 min
+	_interval = MYNODE_MINUTE * 5;
 	nextAction( MYNODE_ACTION_INIT );
 }
 

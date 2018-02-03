@@ -64,8 +64,8 @@ enum {
 };
 
 #ifdef WANT_TSL2591
-//#define TSL_INTERVAL (150L * 1000)
-#define TSL_INTERVAL (30L * 1000)
+//#define TSL_INTERVAL ( MYNODE_SECOND * 150 ) // 2.5min
+#define TSL_INTERVAL ( MYNODE_SEOND * 30 )
 MyNodeItemTSL2591 tsl(
 	SENSORID_LUX, SENSORID_VISIBLE, SENSORID_IR,
 	5
@@ -73,10 +73,10 @@ MyNodeItemTSL2591 tsl(
 #endif
 
 #ifdef WANT_VOLT
-#define VOLT_INTERVAL (150L * 1000)
-#define VOLT_FACTOR 1.0
+#define VOLT_INTERVAL	( MYNODE_SECOND * 150 ) // 2.5min
+#define VOLT_FACTOR	MYNODE_VOLT
 #define VOLT_PIN_ANALOG A0
-#define VOLT_PIN_VCC 2
+#define VOLT_PIN_VCC 3
 MyNodeItemVolt volt(
 	SENSORID_VOLT,
 	VOLT_PIN_ANALOG, VOLT_PIN_VCC
@@ -84,8 +84,8 @@ MyNodeItemVolt volt(
 #endif
 
 #ifdef WANT_BATTERY
-#define BAT_INTERVAL (300L * 1000)
-#define BAT_MVOLT_MIN 2600
+#define BAT_INTERVAL	( MYNODE_SECOND * 30 )
+#define BAT_MVOLT_MIN	2600
 MyNodeItemBatteryVcc battery;
 #endif
 
