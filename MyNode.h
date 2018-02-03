@@ -5,7 +5,11 @@
 #include <core/MySensorsCore.h>
 
 #include "MyNodeItem.h"
+
+#ifdef MYNODE_WITH_HEARTBEAT
 #include "MyNodeItemHeartbeat.h"
+#endif
+
 // TODO: #include "MyNodeItemControl.h"
 
 /************************************************************
@@ -44,12 +48,21 @@ extern const char SKETCH_VERSION[] PROGMEM;
 
 // TODO: @_MyNodeControl,\
 
+#ifdef MYNODE_WITH_HEARTBEAT
 #define MyNodeItems(...) \
 MyNodeItem *_MyNodeItems[] = {\
 	&_MyNodeHeartbeat,\
 	__VA_ARGS__,\
 	NULL\
 };
+#else
+#define MyNodeItems(...) \
+MyNodeItem *_MyNodeItems[] = {\
+	__VA_ARGS__,\
+	NULL\
+};
+#endif
+
 
 void MyNodeInit( void ) __attribute__((weak));
 

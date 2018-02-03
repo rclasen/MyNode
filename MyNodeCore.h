@@ -3,6 +3,7 @@
 
 #define MYNODE_DEBUG 1
 #define MYNODE_ERROR 1
+//#define MYNODE_WITH_HEARTBEAT
 
 #include "MyProgmem.h"
 #include "MyAssert.h"

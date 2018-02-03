@@ -38,7 +38,7 @@ void before( void )
 		+ MYNODE_NV_INTREF_SIZE;
 
 #if MYNODE_DEBUG
-	Serial.print(F("MN nvSize="));
+	Serial.print(F("MN nv Size="));
 	Serial.println(nvSize);
 #endif
 
@@ -46,6 +46,10 @@ void before( void )
 	if( nvSize != MyNodeNvGet16( MYNODE_NV_MAGIC ) ){
 		nvDefaults();
 		MyNodeNvSet16( MYNODE_NV_MAGIC, nvSize );
+	} else {
+#if MYNODE_DEBUG
+		Serial.println(F("MN nv Ok"));
+#endif
 	}
 
 	if( MyNodeInit )
@@ -75,7 +79,9 @@ void setup( void )
 void presentation()
 {
 	sendSketchInfo( SKETCH_NAME, SKETCH_VERSION );
+#ifdef MYNODE_WITH_HEARTBEAT
 	_MyNodeHeartbeat.activity();
+#endif
 
 	for( MyNodeItem **item = _MyNodeItems; *item; ++item )
 		(*item)->presentation();
