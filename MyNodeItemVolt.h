@@ -2,6 +2,7 @@
 #define MyNodeItemVolt_h
 
 #include "MyNodeItem.h"
+#include "MyAdc.h"
 
 // talk about using a mosfet to enable something just for measurement
 // https://bitbucket.org/talk2/whisper-node-avr#markdown-header-voltage-monitor
@@ -19,6 +20,7 @@ public:
 
 	virtual const __FlashStringHelper *getName( void );
 
+	// voltage divider factor - see MyAdc.h:
 	void setFactor( uint32_t mfactor );
 
 	virtual void setup(void);
@@ -40,8 +42,8 @@ protected:
 	void powerOn( void );
 	void powerOff( void );
 
-	MyTime _wait;
 	uint32_t _mfactor;
+	uint16_t _mvolt;
 private:
 	uint8_t _analog, _vcc;
 };

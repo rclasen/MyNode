@@ -26,12 +26,17 @@
 #include <MyNode.h>
 
 // when powered directly from battery
-#define WANT_BATTERY
+//#define WANT_BATTERY
 #ifdef WANT_BATTERY
 #include <MyNodeItemBatteryVcc.h>
 #endif
 
-// TODO: external battery status - when using a voltage regulator
+// external battery status - when using a voltage regulator
+#define WANT_BATTERY_ADC
+#ifdef WANT_BATTERY_ADC
+#include <MyNodeItemBatteryAdc.h>
+#endif
+
 
 //#define WANT_VOLT
 #ifdef WANT_VOLT
@@ -101,10 +106,19 @@ MyNodeItemVolt volt(
 );
 #endif
 
-#ifdef WANT_BATTERY
 #define BAT_INTERVAL	( MYNODE_SECOND * 30 )
+#ifdef WANT_BATTERY
 #define BAT_MVOLT_MIN	2600
 MyNodeItemBatteryVcc battery;
+#endif
+
+#ifdef WANT_BATTERY_ADC
+#define BATTERY_FACTOR	MYNODE_VOLT
+#define BATTERY_PIN_ANALOG A1
+#define BATTERY_PIN_VCC 4
+MyNodeItemBatteryAdc battery(
+	BATTERY_PIN_ANALOG, BATTERY_PIN_VCC
+);
 #endif
 
 MyNodeItems(
@@ -123,7 +137,7 @@ MyNodeItems(
 #ifdef WANT_CONTROL
 	&control
 #endif
-#ifdef WANT_BATTERY
+#if defined(WANT_BATTERY) || defined(WANT_BATTERY_ADC)
 	// battery should be last item:
 	&battery
 #endif
@@ -171,6 +185,10 @@ void MyNodeInit() {
 #ifdef WANT_BATTERY
 	battery.setSendInterval(BAT_INTERVAL);
 	battery.setCircuitMin(BAT_MVOLT_MIN);
+#endif
+#ifdef WANT_BATTERY_ADC
+	battery.setSendInterval(BAT_INTERVAL);
+	battery.setFactor(BATTERY_FACTOR);
 #endif
 }
 

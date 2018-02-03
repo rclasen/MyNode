@@ -1,5 +1,4 @@
 #include "MyNodeItemVolt.h"
-#include "MyAdc.h"
 
 static const char name[] PROGMEM = "Volt";
 
@@ -9,7 +8,6 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 {
 	_analog = analog_pin;
 	_vcc = vcc_pin;
-	_wait = 50;
 	_mfactor = MYNODE_VOLT;
 	setSensor(0, id, S_MULTIMETER );
 };
@@ -57,7 +55,7 @@ void MyNodeItemVolt::actionPollPrepare( void )
 {
 	if( _vcc != MYNODE_PIN_NONE ){
 		powerOn();
-		nextAction( MYNODE_ACTION_POLLRUN, _wait );
+		nextAction( MYNODE_ACTION_POLLRUN, 50 );
 
 	} else {
 		nextAction( MYNODE_ACTION_POLLRUN );
@@ -71,14 +69,14 @@ void MyNodeItemVolt::actionPollRun( void )
 	uint16_t raw = MyAdcReadInt( _analog );
 	powerOff();
 
-	uint16_t mvolt = _mfactor * raw / MYNODE_VOLT;
+	_mvolt = _mfactor * raw / MYNODE_VOLT;
 
 #if MYNODE_DEBUG
 	Serial.print(F("MNI Volt mvolt="));
-	Serial.println(mvolt);
+	Serial.println(_mvolt);
 #endif
 
-	send(_msg(0, V_VOLTAGE).set(mvolt,2));
+	send(_msg(0, V_VOLTAGE).set(_mvolt,2));
 	// TODO: handle failed send
 }
 
