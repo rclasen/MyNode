@@ -9,6 +9,8 @@
 // will rollover every 49 days (as millis() does)
 // so... only compare durations... don't compare absolute timestamps
 
+#define MYNODE_SECOND1	(1000UL)
+
 typedef uint32_t MyTime;
 #define MYNODE_TIME_MAXDUR (UINT32_MAX>>1)
 

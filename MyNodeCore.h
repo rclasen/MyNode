@@ -3,6 +3,9 @@
 
 #define MYNODE_DEBUG 1
 #define MYNODE_ERROR 1
+
+// instead of heartbeat better send sensor readings / actor status
+// periodically - at least some of them:
 //#define MYNODE_WITH_HEARTBEAT
 
 #include "MyProgmem.h"

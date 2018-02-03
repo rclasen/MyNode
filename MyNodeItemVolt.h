@@ -19,7 +19,7 @@ public:
 
 	virtual const __FlashStringHelper *getName( void );
 
-	void setFactor( float factor );
+	void setFactor( uint32_t mfactor );
 
 	virtual void setup(void);
 
@@ -41,7 +41,7 @@ protected:
 	void powerOff( void );
 
 	MyTime _wait;
-	float _factor;
+	uint32_t _mfactor;
 private:
 	uint8_t _analog, _vcc;
 };

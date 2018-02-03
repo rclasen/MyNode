@@ -61,20 +61,16 @@ void MyNodeItemBatteryVcc::actionPollRun( void )
 
 	uint16_t mvolt = MyAdcVcc();
 
-	float volt = .001 * mvolt;
-
 	uint8_t level = MyBatteryCircuit( mvolt, _min, _cells, _type );
 
 #if MYNODE_DEBUG
-	Serial.print(F("MNI BatVcc volt="));
-	Serial.print(volt);
-	Serial.print(F(" mvolt="));
+	Serial.print(F("MNI BatVcc mvolt="));
 	Serial.print(mvolt);
 	Serial.print(F(" level="));
 	Serial.println(level);
 #endif
 
-	send(_msg(0, V_VOLTAGE).set(volt,2));
+	send(_msg(0, V_VOLTAGE).set(mvolt,2));
 	sendBatteryLevel( level );
 	// TODO: handle failed send
 }

@@ -3,6 +3,9 @@
 
 #include "MyTime.h"
 
+// to avoid float arithmetics, we use milli-volts:
+#define MYNODE_VOLT1	(1000ul)
+
 // get voltage of internal reference using externally measured Vcc as reference
 uint16_t MyAdcReadIntref( uint16_t external_mvolts );
 

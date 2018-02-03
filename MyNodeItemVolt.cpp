@@ -10,7 +10,7 @@ MyNodeItemVolt::MyNodeItemVolt( uint8_t id,
 	_analog = analog_pin;
 	_vcc = vcc_pin;
 	_wait = 50;
-	_factor = 1;
+	_mfactor = MYNODE_VOLT1;
 	setSensor(0, id, S_MULTIMETER );
 };
 
@@ -19,9 +19,9 @@ const __FlashStringHelper *MyNodeItemVolt::getName( void )
 	return PGMT(name);
 }
 
-void MyNodeItemVolt::setFactor( float factor )
+void MyNodeItemVolt::setFactor( uint32_t mfactor )
 {
-	_factor = factor;
+	_mfactor = mfactor;
 }
 
 void MyNodeItemVolt::setup( void )
@@ -72,17 +72,17 @@ void MyNodeItemVolt::actionPollRun( void )
 {
 	nextActionPoll( _interval );
 
-	uint16_t mvolt = MyAdcReadInt( _analog );
+	uint16_t raw = MyAdcReadInt( _analog );
 	powerOff();
 
-	float volt = _factor * .001 * mvolt;
+	uint16_t mvolt = _mfactor * raw / MYNODE_VOLT1;
 
 #if MYNODE_DEBUG
-	Serial.print(F("MNI Volt volt="));
-	Serial.println(volt);
+	Serial.print(F("MNI Volt mvolt="));
+	Serial.println(mvolt);
 #endif
 
-	send(_msg(0, V_VOLTAGE).set(volt,2));
+	send(_msg(0, V_VOLTAGE).set(mvolt,2));
 	// TODO: handle failed send
 }
 

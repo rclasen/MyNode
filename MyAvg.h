@@ -44,7 +44,7 @@ T MyAvgCalc( T *list, const uint8_t size, const uint8_t have, const uint8_t next
 
 // TODO: consider define for static list allocation
 
-template <class T>
+template <class T, class S>
 class MyAvg {
 private:
 	T *_list;
@@ -88,7 +88,7 @@ public:
 		if( want > _have )
 			want = _have;
 
-		T sum = 0;
+		S sum = 0;
 		for( uint8_t i = want; i > 0; --i ){
 			uint8_t x = (_size + _next - i) % _size;
 

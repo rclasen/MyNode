@@ -3,6 +3,9 @@
 
 #include "MyNodeCore.h";
 
+// to avoid float arithmetics, we use milli-lux:
+#define MYNODE_LUX1	(1000ul)
+
 /************************************************************
  *
  * MyNodeItem

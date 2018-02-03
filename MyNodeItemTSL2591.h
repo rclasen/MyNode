@@ -29,8 +29,8 @@ protected:
 private:
 	Sensor_TSL2591 _sensor;
 	uint8_t _run, _polls, _avg;
-	MyAvg<uint16_t> avis, air;
-	MyAvg<float> alux;
+	MyAvg<uint16_t,uint32_t> avis, air;
+	MyAvg<uint32_t,uint32_t> alux;
 };
 
 #endif

@@ -28,7 +28,7 @@ uint8_t MyBatteryLevelAlkaline( uint16_t mvolt )
 		return 0;
 
 	// alkaline cell voltage drops "mostly" proportional to charging level
-	return (float) 100 * (mvolt - ALKALINE_MIN)
+	return (uint32_t)100 * (mvolt - ALKALINE_MIN)
 		/ (ALKALINE_MAX - ALKALINE_MIN);
 }
 
@@ -71,7 +71,7 @@ uint8_t MyBatteryCircuit( uint16_t bat_mvolt, uint16_t circuit_min,
 
 	uint8_t lbat = MyBatteryLevel( bat_mvolt / cells, type );
 
-	return (float)100 * (lbat - min) / (100 - min);
+	return (uint32_t)100 * (lbat - min) / (100 - min);
 }
 
 

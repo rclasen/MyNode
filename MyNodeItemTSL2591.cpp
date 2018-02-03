@@ -115,20 +115,20 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	uint16_t full = raw & 0xFFFF;
 	uint16_t ir = raw >> 16;
 	uint16_t visible = full - ir;
-	float lux = _sensor.calculateLux( full, ir );
+	uint32_t mlux = MYNODE_LUX1 * _sensor.calculateLux( full, ir );
 
 #if MYNODE_DEBUG
 	Serial.print(F("TSL2591 run ")); Serial.println(_run);
-	Serial.print(F(" lux: ")); Serial.println( lux );
+	Serial.print(F(" mlux: ")); Serial.println( mlux );
 	Serial.print(F(" visible: ")); Serial.println( visible );
 	Serial.print(F(" ir: ")); Serial.println( ir );
 #endif
 
 	air.add( ir );
 	avis.add( visible );
-	alux.add( lux );
+	alux.add( mlux );
 
-	if( lux >= TSL2591_LUX_CLIPPED ){
+	if( mlux >= TSL2591_LUX_CLIPPED ){
 		send(_msg(0, V_CUSTOM).set(F("clipped")));
 #ifdef MYNODE_ERROR
 		Serial.println(F("!TSL2591 lux"));
@@ -138,21 +138,21 @@ void MyNodeItemTSL2591::actionPollRun(void)
 	if( _run < _polls )
 		return;
 
-	lux = alux.calc(_avg);
+	mlux = alux.calc(_avg);
 	visible = avis.calc(_avg);
 	ir = air.calc(_avg);
 
 #ifdef MYNODE_DEBUG
 	Serial.println(F("TSL2591 send"));
-	Serial.print(F(" lux: ")); Serial.println( lux, 3 );
+	Serial.print(F(" mlux: ")); Serial.println( mlux );
 	Serial.print(F(" visible: ")); Serial.println( visible );
 	Serial.print(F(" ir: ")); Serial.println( ir );
 #endif
 	_run = 0;
 
-	send(_msg(0, V_LIGHT_LEVEL).set(lux,3));
-	send(_msg(1, V_LIGHT_LEVEL).set(visible));
-	send(_msg(2, V_LIGHT_LEVEL).set(ir));
+	send(_msg(0, V_LIGHT_LEVEL).set(mlux));
+	send(_msg(1, V_LIGHT_LEVEL).set(MYNODE_LUX1 * visible));
+	send(_msg(2, V_LIGHT_LEVEL).set(MYNODE_LUX1 * ir));
 
 	// TODO: handle failed send
 }
